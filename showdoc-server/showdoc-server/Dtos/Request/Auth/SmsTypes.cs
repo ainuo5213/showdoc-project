@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace showdoc_server.Dtos.Request.Sms
+namespace showdoc_server.Dtos.Request.Auth
 {
     public enum SmsTypes
     {

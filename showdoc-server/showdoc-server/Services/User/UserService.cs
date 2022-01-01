@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using showdoc_server.Dtos.Request.Login;
-using showdoc_server.Dtos.Request.Register;
+using showdoc_server.Dtos.Request.Auth;
 using showdoc_server.Dtos.Table;
 using showdoc_server.Reponsitory.User;
 using showdoc_server.Services.Cache.Redis;
@@ -95,6 +92,13 @@ namespace showdoc_server.Services.User
                 signingCredentials);
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
             return tokenString;
+        }
+
+        public async Task<bool> PassForget(PassForgetDTO entity)
+        {
+            Users user = this.mapper.Map<Users>(entity);
+            int cnt = await this.userReponsitory.ChangePasswordAsync(user);
+            return cnt > 0;
         }
     }
 }

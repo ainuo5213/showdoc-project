@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using showdoc_server.Dtos.Request.Login;
-using showdoc_server.Dtos.Request.Register;
+﻿using System.Threading.Tasks;
+using showdoc_server.Dtos.Request.Auth;
 
 namespace showdoc_server.Services.User
 {
@@ -11,5 +7,6 @@ namespace showdoc_server.Services.User
     {
         Task<bool> Register(RegisterUserDTO entity);
         Task<LoginResultDTO> Login(LoginUserDTO entity);
+        Task<bool> PassForget(PassForgetDTO entity);
     }
 }

@@ -19,6 +19,17 @@ namespace showdoc_server.Reponsitory.User
             return await SugarContext.Context.Insertable(user).ExecuteCommandAsync();
         }
 
+        public async Task<int> ChangePasswordAsync(Users user)
+        {
+            Users entity = await this.GetUserByPhoneAsync(user.Cellphone);
+            if (entity == null)
+            {
+                throw new Exception("user not register");
+            }
+
+            return await SugarContext.Context.Updateable<Users>().SetColumns(r => r.Password == user.Password).Where(r => r.UserID == entity.UserID).ExecuteCommandAsync();
+        }
+
         public async Task<Users> GetUserByPhoneAsync(string cellphone)
         {
             return await SugarContext.Context.Queryable<Users>().FirstAsync(r => r.Cellphone == cellphone);

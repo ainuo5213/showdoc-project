@@ -10,5 +10,6 @@ namespace showdoc_server.Reponsitory.User
     {
         Task<int> AddUserAsync(Users user);
         Task<Users> GetUserByPhoneAsync(string cellphone);
+        Task<int> ChangePasswordAsync(Users user);
     }
 }

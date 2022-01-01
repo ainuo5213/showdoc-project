@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using showdoc_server.Dtos.Request.Register;
+﻿using AutoMapper;
+using showdoc_server.Dtos.Request.Auth;
 using showdoc_server.Dtos.Table;
 
 namespace showdoc_server.Profiles
@@ -13,6 +9,7 @@ namespace showdoc_server.Profiles
         public UsersProfile()
         {
             this.CreateMap<RegisterUserDTO, Users>();
+            this.CreateMap<PassForgetDTO, Users>();
         }
     }
 }

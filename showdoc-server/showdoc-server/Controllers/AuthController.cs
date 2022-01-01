@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using showdoc_server.Dtos.Request.Login;
-using showdoc_server.Dtos.Request.Register;
-using showdoc_server.Dtos.Request.Sms;
+using showdoc_server.Dtos.Request.Auth;
 using showdoc_server.Services.Cache.Redis;
 using showdoc_server.Services.Sms;
 using showdoc_server.Services.User;
@@ -53,6 +50,19 @@ namespace showdoc_server.Controllers
         {
             LoginResultDTO userDTO = await this.userService.Login(entity);
             return await this.SuccessAsync(userDTO);
+        }
+
+        [HttpPost("passforget")]
+        public async Task<IActionResult> PassForget([FromServices] IRedisService redisService, [FromBody] PassForgetDTO entity)
+        {
+            string key = redisService.Key(SmsTypes.ForgetPassword.ToString(), entity.Cellphone);
+            if (string.IsNullOrEmpty(redisService.Get(key)) || redisService.Get(key) != entity.VerifyCode)
+            {
+                throw new ArgumentException("verify code is not valid");
+            }
+            entity.Password = MD5Hash.Hash.Content(entity.Password);
+            bool isSuccess = await this.userService.PassForget(entity);
+            return await this.SuccessAsync(isSuccess);
         }
     }
 }
