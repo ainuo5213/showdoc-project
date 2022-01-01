@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -107,6 +108,11 @@ namespace showdoc_server.Services.User
             Users user = await this.userReponsitory.GetUserByIdAsync(userId);
             UserInfoDTO data = this.mapper.Map<UserInfoDTO>(user);
             return data;
+        }
+
+        public Task<IEnumerable<SearchUserJoinProjectItemDTO>> SearchUserByKeyAsync(int userId, int projectID, string key)
+        {
+            return this.userReponsitory.SearchUserByKeyAsync(userId, projectID, key);
         }
     }
 }

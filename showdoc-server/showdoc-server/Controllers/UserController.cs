@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -20,7 +21,7 @@ namespace showdoc_server.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService userService;
-        
+
 
         public UserController(IUserService userService)
         {
@@ -44,6 +45,14 @@ namespace showdoc_server.Controllers
                 redisService.Delete(key);
             }
             return await this.SuccessAsync(true);
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] int projectID, [FromQuery] string key = "")
+        {
+            int userId = this.GetUserID();
+            IEnumerable<SearchUserJoinProjectItemDTO> data = await this.userService.SearchUserByKeyAsync(userId, projectID, key);
+            return await this.SuccessAsync(data);
         }
     }
 }

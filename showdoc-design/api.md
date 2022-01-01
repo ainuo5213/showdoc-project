@@ -343,7 +343,7 @@ return:
 }
 ```
 
-### 【API】搜索加入项目
+### 【已完成】【API】搜索加入项目
 
 url: `/api/project/search?key={key}`
 
@@ -367,9 +367,9 @@ return:
 
 
 
-### 【API】根据名字搜索用户
+### 【已完成】【API】搜索未加入项目的用户
 
-url: `/api/user/search?key={keyword}`
+url: `/api/user/search?key={keyword}&projectID={projectID}`
 
 return:
 
@@ -379,7 +379,7 @@ return:
   errmsg: "",
   data: [
     {
-      ID: 123,
+      userID: 123,
       username: "sad"
     }
   ]
