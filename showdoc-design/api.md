@@ -31,7 +31,7 @@ return:
 
 
 
-### 【API】注册
+### 【已完成】【API】注册
 
 注册需要判断：
 
@@ -40,7 +40,7 @@ return:
 
 表单项有：
 
-用户名、手机号、密码、确认密码、验证码，皆为必填项
+用户名、手机号、密码、验证码，皆为必填项
 
 url: `/api/auth/register`
 
@@ -69,7 +69,7 @@ return:
 
 
 
-### 【API】登录
+### 【已完成】【API】登录
 
 用户名和密码登录：需要判断用户是否存在、密码是否正确
 
@@ -85,8 +85,7 @@ data:
 
 ```json
 {
-  field: "",
-  type: 0,
+  cellphone: "",
   password: ""
 }
 ```
@@ -100,7 +99,6 @@ return:
   data: {
     userId: 0,
     username: "",
-    teamId: 0,
     expires: "",
     token: ""
   }

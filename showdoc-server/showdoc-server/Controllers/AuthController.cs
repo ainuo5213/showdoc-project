@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using showdoc_server.Dtos.Request.Login;
 using showdoc_server.Dtos.Request.Register;
 using showdoc_server.Dtos.Request.Sms;
 using showdoc_server.Services.Cache.Redis;
@@ -44,6 +46,13 @@ namespace showdoc_server.Controllers
             entity.Password = MD5Hash.Hash.Content(entity.Password);
             bool isSuccess = await this.userService.Register(entity);
             return await this.SuccessAsync(isSuccess);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserDTO entity)
+        {
+            LoginResultDTO userDTO = await this.userService.Login(entity);
+            return await this.SuccessAsync(userDTO);
         }
     }
 }

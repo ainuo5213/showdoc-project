@@ -34,9 +34,9 @@ namespace showdoc_server.Services.Cache.Redis
             this.DB.StringSet(key, value, expires);
         }
 
-        public string Key(string prefix, string cellphone)
+        public string Key(string prefix, string meta)
         {
-            return $"{prefix}:{cellphone}";
+            return $"{prefix}:{meta}";
         }
     }
 }
