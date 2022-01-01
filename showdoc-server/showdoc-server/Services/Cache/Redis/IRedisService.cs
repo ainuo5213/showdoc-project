@@ -11,5 +11,6 @@ namespace showdoc_server.Services.Cache.Redis
         string Get(string key);
         void Delete(string key);
         void Set(string key, string value, TimeSpan expires);
+        string Key(string prefix, string cellphone);
     }
 }

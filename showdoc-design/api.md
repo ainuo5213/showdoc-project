@@ -52,7 +52,7 @@ data:
 {
   username: "",
   cellphone: "",
-  password: ""
+  password: "",
   verifyCode: ""
 }
 ```

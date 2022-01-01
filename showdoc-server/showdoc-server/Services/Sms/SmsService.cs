@@ -28,7 +28,7 @@ namespace showdoc_server.Services.Sms
 
         public async Task<bool> SendSmsCode(string prefix, string cellphone)
         {
-            string key = $"{prefix}:{cellphone}";
+            string key = this.redisService.Key(prefix, cellphone);
             if (!string.IsNullOrEmpty(this.redisService.Get(key)))
             {
                 return true;
@@ -41,7 +41,7 @@ namespace showdoc_server.Services.Sms
             bool isSuccess = data == "1";
             if (isSuccess)
             {
-                this.redisService.Set(cellphone, code, new TimeSpan(0, 1, 0));
+                this.redisService.Set(key, code, new TimeSpan(0, 1, 0));
             }
             await this.smsReponsitory.AddSms(new Dtos.Table.Sms()
             {

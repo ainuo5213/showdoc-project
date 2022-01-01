@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -82,6 +83,8 @@ namespace showdoc_server
             }
 
             app.UseAuthentication();
+
+            app.UseStaticFiles("/wwwroot");
 
             app.UseCors("cors");
 
