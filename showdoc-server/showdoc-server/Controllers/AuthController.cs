@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using showdoc_server.Context;
-using showdoc_server.Dtos.Table;
+using showdoc_server.Dtos.Request.Sms;
+using showdoc_server.Services.Sms;
 
 namespace showdoc_server.Controllers
 {
@@ -13,10 +10,22 @@ namespace showdoc_server.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        [HttpGet("")]
-        public IEnumerable<Users> Index()
+        private readonly ISmsService smsService;
+
+        public AuthController(ISmsService smsService)
         {
-            return SugarContext.Context.Queryable<Users>().ToList();
+            this.smsService = smsService;
+        }
+
+        [HttpPost("message")]
+        public async Task<IActionResult> Message([FromBody] SmsDTO entity)
+        {
+            if (entity.Type != SmsTypes.ForgetPassword && entity.Type != SmsTypes.Register)
+            {
+                throw new ArgumentException("type is not supported");
+            }
+            bool isSuccess = await this.smsService.SendSmsCode(entity.Type.ToString(), entity.Cellphone);
+            return await this.SuccessAsync(isSuccess);
         }
     }
 }
