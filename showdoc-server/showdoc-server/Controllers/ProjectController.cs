@@ -39,5 +39,27 @@ namespace showdoc_server.Controllers
             ProjectListItemDTO data = await this.projectService.CreateFolderOrProjectAsync(this.GetUserID(), entity);
             return await this.SuccessAsync(data);
         }
+
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete(DeleteProjectOrFolderDTO entity)
+        {
+            if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
+            {
+                throw new System.Exception("not supported object type");
+            }
+            bool data = await this.projectService.DeleteFolderOrProjectAsync(this.GetUserID(), entity);
+            return await this.SuccessAsync(data);
+        }
+
+        [HttpPost("move")]
+        public async Task<IActionResult> Move(MoveProjectOrFolderDTO entity)
+        {
+            if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
+            {
+                throw new System.Exception("not supported object type");
+            }
+            bool data = await this.projectService.MoveFolderOrProjectAsync(this.GetUserID(), entity);
+            return await this.SuccessAsync(data);
+        }
     }
 }

@@ -171,7 +171,7 @@ return:
 }
 ```
 
-### 【API】获取文件夹数据
+### 【已完成】【API】获取文件夹数据
 
 url: `/api/project/list?folderID={folderID}`
 
@@ -198,7 +198,7 @@ return:
 
 
 
-### 【API】新建项目或文件夹
+### 【已完成】【API】新建项目或文件夹
 
 url: `/api/project/create`
 
@@ -208,8 +208,9 @@ data:
 
 ```json
 {
-  type: 0,
-  name: ""
+  folderID: 1, // 当前所在的文件夹ID
+  type: 0, // 文件夹为0；项目为1
+  name: "" // 名字
 }
 ```
 
@@ -232,7 +233,7 @@ return:
 
 
 
-### 【API】删除项目或文件夹
+### 【已完成】【API】删除项目或文件夹
 
 url: `/api/project/delete`
 
@@ -242,9 +243,8 @@ data:
 
 ```json
 {
-  userID: 0,
-  type: 0,
-  objectID: 0
+  type: 0, // 文件夹为0；项目为1
+  objectID: 0 // 删除项ID
 }
 ```
 
@@ -260,7 +260,7 @@ return:
 
 
 
-### 【API】移动文件夹或移动项目
+### 【已完成】【API】移动文件夹或移动项目
 
 url: `/api/project/move`
 
@@ -270,10 +270,9 @@ data:
 
 ```json
 {
-  userID: 0,
-  folderID: 1,
-  type: 0,
-  objectID: 0
+  folderID: 1, // 目标文件夹ID
+  type: 0, // 当前移动项类型。文件夹为0；项目为1
+  objectID: 0 // 当前文件夹或项目ID
 }
 ```
 
@@ -283,7 +282,7 @@ return:
 {
   errno: 0,
   errmsg: "",
-  data: null
+  data: true
 }
 ```
 

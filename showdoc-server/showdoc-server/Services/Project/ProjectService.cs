@@ -40,11 +40,45 @@ namespace showdoc_server.Services.Project
             }
         }
 
+        public async Task<bool> DeleteFolderOrProjectAsync(int v, DeleteProjectOrFolderDTO entity)
+        {
+            if (entity.ObjectID == 0)
+            {
+                return true;
+            }
+            int cnt;
+            if (entity.Type == ProjectListItemTypes.Folder)
+            {
+                cnt = await this.projectReponsitory.DeleteFolderAsync(v, entity);
+            }
+            else
+            {
+                cnt = await this.projectReponsitory.DeleteProjectAsync(v, entity);
+            }
+
+            return cnt > 0;
+        }
+
         public async Task<IEnumerable<ProjectListItemDTO>> GetFolderContentAsync(int userID, int folderID)
         {
             IEnumerable<ProjectListItemDTO> folders = await this.projectReponsitory.GetFolderContentAsync(userID, folderID);
 
             return folders;
+        }
+
+        public async Task<bool> MoveFolderOrProjectAsync(int v, MoveProjectOrFolderDTO entity)
+        {
+            int cnt;
+            if (entity.Type == ProjectListItemTypes.Folder)
+            {
+                cnt = await this.projectReponsitory.MoveFolderAsync(v, entity);
+            }
+            else
+            {
+                cnt = await this.projectReponsitory.MoveProjectAsync(v, entity);
+            }
+
+            return cnt > 0;
         }
     }
 }
