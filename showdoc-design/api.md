@@ -15,7 +15,7 @@ data:
 ```json
 {
   cellphone: "",
-  type: 0
+  type: 0 // 0：注册；1：忘记密码
 }
 ```
 
@@ -288,7 +288,7 @@ return:
 
 
 
-### 【API】复制文件夹或复制项目
+### 【暂不支持】【API】复制文件夹或复制项目
 
 url: `/api/project/copy`
 
@@ -298,7 +298,6 @@ data:
 
 ```json
 {
-  userID: 0,
   folderID: 1,
   type: 0,
   objectID: 0

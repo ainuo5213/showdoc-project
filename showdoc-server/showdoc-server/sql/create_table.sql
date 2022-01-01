@@ -1,6 +1,6 @@
 GO
 
-/****** Object:  Table [dbo].[Documents]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[Documents]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -25,7 +25,7 @@ CREATE TABLE [dbo].[Documents](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-/****** Object:  Table [dbo].[Folders]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[Folders]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -40,6 +40,7 @@ CREATE TABLE [dbo].[Folders](
 	[ProjectID] [int] NOT NULL,
 	[Type] [int] NOT NULL,
 	[DeleteStatus] [int] NOT NULL,
+	[SortTime] [datetime] NOT NULL,
 	[CreateTime] [datetime] NOT NULL,
 	[UpdateTime] [datetime] NOT NULL,
  CONSTRAINT [PK_Folders] PRIMARY KEY CLUSTERED 
@@ -49,7 +50,7 @@ CREATE TABLE [dbo].[Folders](
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [dbo].[HistoryDocuments]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[HistoryDocuments]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -69,7 +70,7 @@ CREATE TABLE [dbo].[HistoryDocuments](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-/****** Object:  Table [dbo].[ProjectInvitations]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[ProjectInvitations]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -93,7 +94,7 @@ CREATE TABLE [dbo].[ProjectInvitations](
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [dbo].[Projects]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[Projects]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -104,7 +105,6 @@ CREATE TABLE [dbo].[Projects](
 	[ProjectID] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](20) NOT NULL,
 	[CreatorID] [int] NOT NULL,
-	[FolderID] [int] NOT NULL,
 	[DeleteStatus] [int] NOT NULL,
 	[CreateTime] [datetime] NOT NULL,
 	[UpdateTime] [datetime] NOT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE [dbo].[Projects](
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [dbo].[ProjectUsers]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[ProjectUsers]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -126,6 +126,7 @@ CREATE TABLE [dbo].[ProjectUsers](
 	[ProjectUserID] [int] IDENTITY(1,1) NOT NULL,
 	[UserID] [int] NOT NULL,
 	[ProjectID] [int] NOT NULL,
+	[SortTime] [datetime] NOT NULL,
 	[CreateTime] [datetime] NOT NULL,
  CONSTRAINT [PK_ProjectUsers] PRIMARY KEY CLUSTERED 
 (
@@ -134,7 +135,7 @@ CREATE TABLE [dbo].[ProjectUsers](
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [dbo].[Sms]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[Sms]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -145,6 +146,7 @@ CREATE TABLE [dbo].[Sms](
 	[SmsID] [int] IDENTITY(1,1) NOT NULL,
 	[Cellphone] [nvarchar](20) NOT NULL,
 	[Content] [nvarchar](128) NOT NULL,
+	[Status] [bit] NOT NULL,
 	[CreateTime] [datetime] NOT NULL,
  CONSTRAINT [PK_VerifyCodes] PRIMARY KEY CLUSTERED 
 (
@@ -153,7 +155,7 @@ CREATE TABLE [dbo].[Sms](
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [dbo].[Users]    Script Date: 2022/1/1 9:42:46 ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 2022/1/2 0:58:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -202,6 +204,9 @@ GO
 ALTER TABLE [dbo].[Folders] ADD  CONSTRAINT [DF_Folders_DeleteStatus]  DEFAULT ((0)) FOR [DeleteStatus]
 GO
 
+ALTER TABLE [dbo].[Folders] ADD  CONSTRAINT [DF_Folders_SortTime]  DEFAULT (getdate()) FOR [SortTime]
+GO
+
 ALTER TABLE [dbo].[Folders] ADD  CONSTRAINT [DF_Folders_CreateTime]  DEFAULT (getdate()) FOR [CreateTime]
 GO
 
@@ -236,6 +241,9 @@ ALTER TABLE [dbo].[Projects] ADD  CONSTRAINT [DF_Projects_CreateTime]  DEFAULT (
 GO
 
 ALTER TABLE [dbo].[Projects] ADD  CONSTRAINT [DF_Projects_UpdateTime]  DEFAULT (getdate()) FOR [UpdateTime]
+GO
+
+ALTER TABLE [dbo].[ProjectUsers] ADD  CONSTRAINT [DF_ProjectUsers_SortTime]  DEFAULT (getdate()) FOR [SortTime]
 GO
 
 ALTER TABLE [dbo].[ProjectUsers] ADD  CONSTRAINT [DF_ProjectUsers_CreateTime]  DEFAULT (getdate()) FOR [CreateTime]
@@ -319,6 +327,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'删除状态。0：未删除；1：已删除' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Folders', @level2type=N'COLUMN',@level2name=N'DeleteStatus'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'排序时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Folders', @level2type=N'COLUMN',@level2name=N'SortTime'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Folders', @level2type=N'COLUMN',@level2name=N'CreateTime'
 GO
 
@@ -385,9 +396,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'项目创建者ID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Projects', @level2type=N'COLUMN',@level2name=N'CreatorID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'文件夹ID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Projects', @level2type=N'COLUMN',@level2name=N'FolderID'
-GO
-
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'删除状态。0：未删除；1：已删除' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Projects', @level2type=N'COLUMN',@level2name=N'DeleteStatus'
 GO
 
@@ -409,6 +417,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'项目ID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ProjectUsers', @level2type=N'COLUMN',@level2name=N'ProjectID'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'排序时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ProjectUsers', @level2type=N'COLUMN',@level2name=N'SortTime'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ProjectUsers', @level2type=N'COLUMN',@level2name=N'CreateTime'
 GO
 
@@ -422,6 +433,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'接收方手机号' 
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'短信内容' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Sms', @level2type=N'COLUMN',@level2name=N'Content'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'是否发送成功。true：成功；false：失败' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Sms', @level2type=N'COLUMN',@level2name=N'Status'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Sms', @level2type=N'COLUMN',@level2name=N'CreateTime'

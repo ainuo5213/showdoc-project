@@ -10,8 +10,8 @@ namespace showdoc_server.Reponsitory.Project
     public interface IProjectReponsitory
     {
         Task<IEnumerable<ProjectListItemDTO>> GetFolderContentAsync(int userID, int folderID);
-        Task<ProjectListItemDTO> CreateProjectAsync(int v, Projects projects);
-        Task<ProjectListItemDTO> CreateFolderAsync(int v, Folders folders);
+        Task<ProjectListItemDTO> CreateProjectAsync(int v, CreateProjectOrFolderDTO projects);
+        Task<ProjectListItemDTO> CreateFolderAsync(int v, CreateProjectOrFolderDTO folders);
         Task<int> DeleteFolderAsync(int v, DeleteProjectOrFolderDTO entity);
         Task<int> DeleteProjectAsync(int v, DeleteProjectOrFolderDTO entity);
         Task<int> MoveProjectAsync(int v, MoveProjectOrFolderDTO entity);

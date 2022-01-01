@@ -21,22 +21,11 @@ namespace showdoc_server.Services.Project
         {
             if (entity.Type == ProjectListItemTypes.Project)
             {
-                return await this.projectReponsitory.CreateProjectAsync(v, new Projects()
-                {
-                    FolderID = entity.FolderID,
-                    CreatorID = v,
-                    Name = entity.Name,
-                });
+                return await this.projectReponsitory.CreateProjectAsync(v, entity);
             }
             else
             {
-                return await this.projectReponsitory.CreateFolderAsync(v, new Folders()
-                {
-                    CreatorID = v,
-                    Name = entity.Name,
-                    ParentID = entity.FolderID,
-                    Type = Dtos.Request.Folder.FolderTypes.ProjectFolder,
-                });
+                return await this.projectReponsitory.CreateFolderAsync(v, entity);
             }
         }
 
