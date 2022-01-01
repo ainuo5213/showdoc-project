@@ -36,7 +36,7 @@ return:
 注册需要判断：
 
 	1. 用户验证码是否合法
- 	2. 用户是否已注册（手机号判重）
+	2. 用户是否已注册（手机号判重）
 
 表单项有：
 
@@ -344,39 +344,11 @@ return:
 }
 ```
 
-### 【API】创建团队
+### 【API】搜索加入项目
 
-url: `/api/user/newTeam?userId={userId}`
+url: `/api/invitation/search?key={key}`
 
-method: `post`
-
-return:
-
-```json
-{
-  errno: 0,
-  errmsg: "",
-  data: 12 // team id
-}
-```
-
-
-
-### 【API】邀请加入团队
-
-url: `/api/user/invite`
-
-method: `post`
-
-data: 
-
-```json
-{
-  invite: 1, // 邀请人id
-  invited: 2, // 被邀请者id
-  team: 3 // 团队id
-}
-```
+method: `get`
 
 return:
 
@@ -384,7 +356,13 @@ return:
 {
   errno: 0,
   errmsg: "",
-  data: null
+  data: [
+      {
+          projectId: 0,
+          projectName: "",
+          creator: ""
+      }
+  ]
 }
 ```
 
@@ -431,6 +409,34 @@ return:
 
 ## 邀请列表
 
+### 【API】邀请加入项目
+
+url: `/api/invitation/invite`
+
+method: `post`
+
+data: 
+
+```json
+{
+  invite: 1, // 邀请人id
+  invited: 2, // 被邀请者id
+  projectId: 3 // 团队id
+}
+```
+
+return:
+
+```json
+{
+  errno: 0,
+  errmsg: "",
+  data: null
+}
+```
+
+
+
 ### 【API】获取邀请列表
 
 url：`/api/invitation/list?page={page}&userId={userId}`
@@ -462,7 +468,7 @@ return:
 
 
 
-### 【API】接受团队邀请
+### 【API】接受项目邀请
 
 url：`/api/invitation/operation`
 
