@@ -97,7 +97,7 @@ return:
   errno: 0,
   errmsg: "",
   data: {
-    userId: 0,
+    userID: 0,
     username: "",
     expires: "",
     token: ""
@@ -133,12 +133,12 @@ return:
   errmsg: "",
   data: [
     {
-      userId: 0, // 创建者ID
-      parentId: 0, // 父级文件夹ID
+      userID: 0, // 创建者ID
+      parentID: 0, // 父级文件夹ID
       type: 0, // 类型
       name: "", // 名字
       createTime: "", // 创建名字
-      objectId: 0 // id
+      objectID: 0 // ID
     }
   ]
 }
@@ -173,7 +173,7 @@ return:
 
 ### 【API】获取文件夹数据
 
-url: `/api/project/list?folderId={folderId}`
+url: `/api/project/list?folderID={folderID}`
 
 method: `get`
 
@@ -185,12 +185,12 @@ return:
   errmsg: "",
   data: [
     {
-      userId: 0, // 创建者ID
-      parentId: 0, // 父级文件夹ID
-      type: 0, // 类型
+      userID: 0, // 创建者ID
+      parentID: 0, // 父级文件夹ID
+      type: 0, // 类型。0：文件夹；1：项目
       name: "", // 名字
       createTime: "", // 创建名字
-      objectId: 0 // id
+      objectID: 0 // ID
     }
   ]
 }
@@ -208,8 +208,8 @@ data:
 
 ```json
 {
-  userId: 0,
-  type: 0
+  type: 0,
+  name: ""
 }
 ```
 
@@ -220,8 +220,12 @@ return:
   errno: 0,
   errmsg: "",
   data: {
-    objectId: 0,
-    type: 0
+      userID: 0,
+      parentID: 0,
+      type: 0,
+      name: "",
+      createTime: "",
+      objectID: 0
   }
 }
 ```
@@ -238,9 +242,9 @@ data:
 
 ```json
 {
-  userId: 0,
+  userID: 0,
   type: 0,
-  objectId: 0
+  objectID: 0
 }
 ```
 
@@ -266,10 +270,10 @@ data:
 
 ```json
 {
-  userId: 0,
-  folderId: 1,
+  userID: 0,
+  folderID: 1,
   type: 0,
-  objectId: 0
+  objectID: 0
 }
 ```
 
@@ -295,10 +299,10 @@ data:
 
 ```json
 {
-  userId: 0,
-  folderId: 1,
+  userID: 0,
+  folderID: 1,
   type: 0,
-  objectId: 0
+  objectID: 0
 }
 ```
 
@@ -324,10 +328,10 @@ data:
 
 ```json
 {
-  userId: 0,
+  userID: 0,
   name: "111",
   type: 0,
-  objectId: 0
+  objectID: 0
 }
 ```
 
@@ -355,7 +359,7 @@ return:
   errmsg: "",
   data: [
       {
-          projectId: 0,
+          projectID: 0,
           projectName: "",
           creator: ""
       }
@@ -377,7 +381,7 @@ return:
   errmsg: "",
   data: [
     {
-      id: 123,
+      ID: 123,
       username: "sad"
     }
   ]
@@ -416,9 +420,9 @@ data:
 
 ```json
 {
-  invite: 1, // 邀请人id
-  invited: 2, // 被邀请者id
-  projectId: 3 // 团队id
+  invite: 1, // 邀请人ID
+  invited: 2, // 被邀请者ID
+  projectID: 3 // 团队ID
 }
 ```
 
@@ -436,7 +440,7 @@ return:
 
 ### 【API】获取邀请列表
 
-url：`/api/invitation/list?page={page}&userId={userId}`
+url：`/api/invitation/list?page={page}&userID={userID}`
 
 method: `get`
 
@@ -450,7 +454,7 @@ return:
     totalCount: 10,
     items: [
       {
-        invitationId: 1,
+        invitationID: 1,
         invite: 1,
         inviteUsername: "",
         invited: 1,
@@ -475,8 +479,8 @@ data:
 
 ```json
 {
-  userId: 0,
-  invitationId: 0,
+  userID: 0,
+  invitationID: 0,
   status: 0
 }
 ```
@@ -497,7 +501,7 @@ return:
 
 ### 【API】获取项目文件夹、文档（左侧数据）
 
-url：`/api/document/menu?projedtId={projectId}`
+url：`/api/document/menu?projedtID={projectID}`
 
 method: `get`
 
@@ -509,10 +513,10 @@ return:
   errmsg: "",
   data: [
     {
-      projectId: 0,
+      projectID: 0,
       name: "",
-      objectId: 0,
-      parentId: "",
+      objectID: 0,
+      parentID: "",
       type: 0
     }
   ]
@@ -523,7 +527,7 @@ return:
 
 ### 【API】获取文档内容
 
-url：`/api/document/content?documentId={documentId}`
+url：`/api/document/content?documentID={documentID}`
 
 method: `get`
 
@@ -534,7 +538,7 @@ return:
   errno: 0,
   errmsg: "",
   data: {
-    documentId: "",
+    documentID: "",
     title: "",
     content: "",
     createTime: ""
@@ -554,8 +558,8 @@ data:
 
 ```json
 {
-  userId: 0,
-  folderId: 0,
+  userID: 0,
+  folderID: 0,
   title: "",
   type: 0
 }
@@ -568,10 +572,10 @@ return:
   errno: 0,
   errmsg: "",
   data: {
-    projectId: 0,
+    projectID: 0,
     name: "",
-    objectId: 0,
-    parentId: "",
+    objectID: 0,
+    parentID: "",
     type: 0
   }
 }
@@ -589,8 +593,8 @@ data:
 
 ```json
 {
-  userId: 0,
-  objectId: 0,
+  userID: 0,
+  objectID: 0,
   type: 0
 }
 ```
@@ -609,7 +613,7 @@ return:
 
 ### 【API】查看文档编辑历史
 
-url：`/api/document/history?documentId={documentId}&page={page}`
+url：`/api/document/history?documentID={documentID}&page={page}`
 
 method: `get`
 
@@ -623,9 +627,9 @@ return:
     totalCount: 0,
     items: [
       {
-        userId: 0,
+        userID: 0,
         creator: "",
-        documentId: 0,
+        documentID: 0,
         title: "",
         createTime: ""
       }
@@ -646,9 +650,9 @@ data:
 
 ```json
 {
-  userId: 0,
+  userID: 0,
   content: "",
-  documentId: 0
+  documentID: 0
 }
 ```
 
@@ -676,9 +680,9 @@ data:
 
 ```json
 {
-  userId: 0,
-  objectId: 0,
-  folderId: 0,
+  userID: 0,
+  objectID: 0,
+  folderID: 0,
   type: 0
 }
 ```
@@ -705,8 +709,8 @@ data:
 
 ```json
 {
-  userId: 0,
-  objectId: 0,
+  userID: 0,
+  objectID: 0,
   name: "",
   type: 0
 }
@@ -726,7 +730,7 @@ return:
 
 ### 【API】对比版本
 
-url：`/api/document/historyDetail?historyId={historyId}`
+url：`/api/document/historyDetail?historyID={historyID}`
 
 method: `get`
 
@@ -738,19 +742,19 @@ return:
   errmsg: "",
   data: {
     currentVersion: {
-      documentId: 0,
+      documentID: 0,
       title: "",
       content: "",
       createTime: "",
-      creatorId: ""
+      creatorID: ""
       creator: ""
     },
     historyVersion: {
-      documentId: 0,
+      documentID: 0,
       title: "",
       content: "",
       createTime: "",
-      creatorId: "",
+      creatorID: "",
       creator: ""
     }
   }
@@ -769,9 +773,9 @@ data:
 
 ```json
 {
-  documentId: 123,
-  historyId: 123,
-  userId: 123
+  documentID: 123,
+  historyID: 123,
+  userID: 123
 }
 ```
 

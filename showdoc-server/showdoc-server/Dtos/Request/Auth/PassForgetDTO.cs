@@ -13,8 +13,8 @@ namespace showdoc_server.Dtos.Request.Auth
         [Cellphone(ErrorMessage = "not a phone number")]
         public string Cellphone { get; set; }
         [Required(ErrorMessage = "password needed")]
-        [MinLength(6, ErrorMessage = "password must 6 char at least")]
-        [MaxLength(18, ErrorMessage = "password must 6 char at most")]
+        [MinLength(6, ErrorMessage = "password must be 6 char at least")]
+        [MaxLength(18, ErrorMessage = "password must be 6 char at most")]
         public string Password { get; set; }
         [Required(ErrorMessage = "verify code needed")]
         public string VerifyCode { get; set; }

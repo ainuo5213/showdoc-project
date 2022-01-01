@@ -10,15 +10,15 @@ namespace showdoc_server.Dtos.Request.Auth
     public class RegisterUserDTO
     {
         [Required(ErrorMessage = "username needed")]
-        [MinLength(1, ErrorMessage = "username must 1 char at least")]
-        [MaxLength(18, ErrorMessage = "username must 18 chars at most")]
+        [MinLength(1, ErrorMessage = "username must be 1 char at least")]
+        [MaxLength(18, ErrorMessage = "username must be 18 chars at most")]
         public string Username { get; set; }
         [Required(ErrorMessage = "cellphone needed")]
         [Cellphone(ErrorMessage = "not a phone number")]
         public string Cellphone { get; set; }
         [Required(ErrorMessage = "password needed")]
-        [MinLength(6, ErrorMessage = "password must 6 char at least")]
-        [MaxLength(18, ErrorMessage = "password must 6 char at most")]
+        [MinLength(6, ErrorMessage = "password must be 6 char at least")]
+        [MaxLength(18, ErrorMessage = "password must be 6 char at most")]
         public string Password { get; set; }
         [Required(ErrorMessage = "verify code needed")]
         public string VerifyCode { get; set; }
