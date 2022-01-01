@@ -80,5 +80,24 @@ namespace showdoc_server.Services.Project
 
             return cnt > 0;
         }
+
+        public async Task<bool> RenameFolderOrProjectAsync(int v, RenameProjectOrFolderDTO entity)
+        {
+            if (entity.ObjectID == 0)
+            {
+                return false;
+            }
+            int cnt;
+            if (entity.Type == ProjectListItemTypes.Folder)
+            {
+                cnt = await this.projectReponsitory.RenameFolderAsync(v, entity);
+            }
+            else
+            {
+                cnt = await this.projectReponsitory.RenameProjectAsync(v, entity);
+            }
+
+            return cnt > 0;
+        }
     }
 }

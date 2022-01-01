@@ -12,5 +12,6 @@ namespace showdoc_server.Services.Project
         Task<ProjectListItemDTO> CreateFolderOrProjectAsync(int v, CreateProjectOrFolderDTO entity);
         Task<bool> DeleteFolderOrProjectAsync(int v, DeleteProjectOrFolderDTO entity);
         Task<bool> MoveFolderOrProjectAsync(int v, MoveProjectOrFolderDTO entity);
+        Task<bool> RenameFolderOrProjectAsync(int v, RenameProjectOrFolderDTO entity);
     }
 }

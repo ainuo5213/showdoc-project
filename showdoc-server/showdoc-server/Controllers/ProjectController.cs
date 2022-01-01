@@ -23,14 +23,14 @@ namespace showdoc_server.Controllers
         }
 
         [HttpGet("list")]
-        public async Task<IActionResult> List(int folderID)
+        public async Task<IActionResult> List([FromQuery] int folderID)
         {
             IEnumerable<ProjectListItemDTO> data = await this.projectService.GetFolderContentAsync(this.GetUserID(), folderID);
             return await this.SuccessAsync(data);
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(CreateProjectOrFolderDTO entity)
+        public async Task<IActionResult> Create([FromBody] CreateProjectOrFolderDTO entity)
         {
             if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
             {
@@ -41,7 +41,7 @@ namespace showdoc_server.Controllers
         }
 
         [HttpPost("delete")]
-        public async Task<IActionResult> Delete(DeleteProjectOrFolderDTO entity)
+        public async Task<IActionResult> Delete([FromBody] DeleteProjectOrFolderDTO entity)
         {
             if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
             {
@@ -52,13 +52,24 @@ namespace showdoc_server.Controllers
         }
 
         [HttpPost("move")]
-        public async Task<IActionResult> Move(MoveProjectOrFolderDTO entity)
+        public async Task<IActionResult> Move([FromBody] MoveProjectOrFolderDTO entity)
         {
             if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
             {
                 throw new System.Exception("not supported object type");
             }
             bool data = await this.projectService.MoveFolderOrProjectAsync(this.GetUserID(), entity);
+            return await this.SuccessAsync(data);
+        }
+
+        [HttpPost("rename")]
+        public async Task<IActionResult> Rename([FromBody] RenameProjectOrFolderDTO entity)
+        {
+            if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
+            {
+                throw new System.Exception("not supported object type");
+            }
+            bool data = await this.projectService.RenameFolderOrProjectAsync(this.GetUserID(), entity);
             return await this.SuccessAsync(data);
         }
     }

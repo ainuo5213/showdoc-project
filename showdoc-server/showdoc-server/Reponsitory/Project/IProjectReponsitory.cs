@@ -16,5 +16,7 @@ namespace showdoc_server.Reponsitory.Project
         Task<int> DeleteProjectAsync(int v, DeleteProjectOrFolderDTO entity);
         Task<int> MoveProjectAsync(int v, MoveProjectOrFolderDTO entity);
         Task<int> MoveFolderAsync(int v, MoveProjectOrFolderDTO entity);
+        Task<int> RenameFolderAsync(int v, RenameProjectOrFolderDTO entity);
+        Task<int> RenameProjectAsync(int v, RenameProjectOrFolderDTO entity);
     }
 }

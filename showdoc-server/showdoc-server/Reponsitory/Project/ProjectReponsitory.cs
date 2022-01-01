@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using showdoc_server.Context;
 using showdoc_server.Dtos.Request.Project;
@@ -66,13 +67,17 @@ namespace showdoc_server.Reponsitory.Project
             {
                 throw new Exception("no permission");
             }
-            bool hasChildFolders = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.ParentID == entity.ObjectID);
-            bool hasChildProjects = await SugarContext.Context.Queryable<Projects>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.ObjectID);
+            bool hasChildFolders = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.ParentID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder);
+            bool hasChildProjects = await SugarContext.Context.Queryable<Projects>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete);
             if (hasChildFolders || hasChildProjects)
             {
                 throw new Exception("folder is using. if you want to delete the folder, please delete the children at first");
             }
-            return await SugarContext.Context.Deleteable<Folders>().Where(folder => folder.FolderID == entity.ObjectID && folder.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete).ExecuteCommandAsync();
+            return await SugarContext.Context.Updateable<Folders>().SetColumns(r => new Folders()
+            {
+                DeleteStatus = Dtos.Json.DeleteStatuses.Deleted,
+                UpdateTime = DateTime.Now,
+            }).Where(folder => folder.CreatorID == v && folder.FolderID == entity.ObjectID && folder.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder).ExecuteCommandAsync();
         }
 
         public async Task<int> DeleteProjectAsync(int v, DeleteProjectOrFolderDTO entity)
@@ -125,24 +130,64 @@ namespace showdoc_server.Reponsitory.Project
             {
                 throw new Exception("cannot move itself loop");
             }
-            bool isMineofCurrentFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder);
+            Expression<Func<Folders, bool>> condition = r => r.CreatorID == v && r.FolderID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder;
+            bool isMineofCurrentFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(condition);
             bool isMineofTargetFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.FolderID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder);
             if ((!isMineofCurrentFolder || !isMineofTargetFolder) && entity.FolderID != 0)
             {
                 throw new Exception("no permission");
             }
-            return await SugarContext.Context.Updateable<Folders>().SetColumns(r => r.ParentID == entity.FolderID).Where(r => r.FolderID == entity.ObjectID && r.CreatorID == v && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete).ExecuteCommandAsync();
+            return await SugarContext.Context.Updateable<Folders>().SetColumns(r => new Folders()
+            {
+                ParentID = entity.FolderID,
+                UpdateTime = DateTime.Now,
+            }).Where(condition).ExecuteCommandAsync();
         }
 
         public async Task<int> MoveProjectAsync(int v, MoveProjectOrFolderDTO entity)
         {
-            bool isMineProject = await SugarContext.Context.Queryable<Projects>().AnyAsync(r => r.CreatorID == v && r.ProjectID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete);
+            Expression<Func<Projects, bool>> condition = r => r.ProjectID == entity.ObjectID && r.CreatorID == v && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete;
+            bool isMineProject = await SugarContext.Context.Queryable<Projects>().AnyAsync(condition);
             bool isMineFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.FolderID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder);
             if ((!isMineProject || !isMineFolder) && entity.FolderID != 0)
             {
                 throw new Exception("no permission");
             }
-            return await SugarContext.Context.Updateable<Projects>().SetColumns(r => r.FolderID == entity.FolderID).Where(r => r.ProjectID == entity.ObjectID && r.CreatorID == v && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete).ExecuteCommandAsync();
+            return await SugarContext.Context.Updateable<Projects>().SetColumns(r => new Projects()
+            {
+                FolderID = entity.FolderID,
+                UpdateTime = DateTime.Now,
+            }).Where(condition).ExecuteCommandAsync();
+        }
+
+        public async Task<int> RenameFolderAsync(int v, RenameProjectOrFolderDTO entity)
+        {
+            Expression<Func<Folders, bool>> condition = r => r.CreatorID == v && r.FolderID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder;
+            bool isMineFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(condition);
+            if (!isMineFolder)
+            {
+                throw new Exception("no permission");
+            }
+            return await SugarContext.Context.Updateable<Folders>().SetColumns(r => new Folders()
+            {
+                Name = entity.Name,
+                UpdateTime = DateTime.Now,
+            }).Where(condition).ExecuteCommandAsync();
+        }
+
+        public async Task<int> RenameProjectAsync(int v, RenameProjectOrFolderDTO entity)
+        {
+            Expression<Func<Projects, bool>> condition = r => r.CreatorID == v && r.ProjectID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete;
+            bool isMineProject = await SugarContext.Context.Queryable<Projects>().AnyAsync(condition);
+            if (!isMineProject)
+            {
+                throw new Exception("no permission");
+            }
+            return await SugarContext.Context.Updateable<Projects>().SetColumns(r => new Projects()
+            {
+                Name = entity.Name,
+                UpdateTime = DateTime.Now,
+            }).Where(condition).ExecuteCommandAsync();
         }
     }
 }

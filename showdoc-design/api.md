@@ -317,7 +317,7 @@ return:
 
 
 
-### 【API】重命名文件夹或项目
+### 【已完成】【API】重命名文件夹或项目
 
 url: `/api/project/rename`
 
@@ -327,7 +327,6 @@ data:
 
 ```json
 {
-  userID: 0,
   name: "111",
   type: 0,
   objectID: 0
@@ -340,7 +339,7 @@ return:
 {
   errno: 0,
   errmsg: "",
-  data: null
+  data: true
 }
 ```
 
