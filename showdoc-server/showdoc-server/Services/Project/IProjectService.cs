@@ -13,5 +13,6 @@ namespace showdoc_server.Services.Project
         Task<bool> DeleteFolderOrProjectAsync(int v, DeleteProjectOrFolderDTO entity);
         Task<bool> MoveFolderOrProjectAsync(int v, MoveProjectOrFolderDTO entity);
         Task<bool> RenameFolderOrProjectAsync(int v, RenameProjectOrFolderDTO entity);
+        Task<IEnumerable<SearchProjectItemDTO>> SearchProjectByKeyAsync(int v, string key);
     }
 }

@@ -99,5 +99,10 @@ namespace showdoc_server.Services.Project
 
             return cnt > 0;
         }
+
+        public async Task<IEnumerable<SearchProjectItemDTO>> SearchProjectByKeyAsync(int v, string key)
+        {
+            return await this.projectReponsitory.SearchProjectByKeyAsync(v, key);
+        }
     }
 }

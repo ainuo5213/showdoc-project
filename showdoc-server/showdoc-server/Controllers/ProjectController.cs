@@ -72,5 +72,12 @@ namespace showdoc_server.Controllers
             bool data = await this.projectService.RenameFolderOrProjectAsync(this.GetUserID(), entity);
             return await this.SuccessAsync(data);
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string key)
+        {
+            IEnumerable<SearchProjectItemDTO> data = await this.projectService.SearchProjectByKeyAsync(this.GetUserID(), key);
+            return await this.SuccessAsync(data);
+        }
     }
 }

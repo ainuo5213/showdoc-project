@@ -18,5 +18,6 @@ namespace showdoc_server.Reponsitory.Project
         Task<int> MoveFolderAsync(int v, MoveProjectOrFolderDTO entity);
         Task<int> RenameFolderAsync(int v, RenameProjectOrFolderDTO entity);
         Task<int> RenameProjectAsync(int v, RenameProjectOrFolderDTO entity);
+        Task<IEnumerable<SearchProjectItemDTO>> SearchProjectByKeyAsync(int v, string key);
     }
 }

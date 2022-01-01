@@ -345,7 +345,7 @@ return:
 
 ### 【API】搜索加入项目
 
-url: `/api/invitation/search?key={key}`
+url: `/api/project/search?key={key}`
 
 method: `get`
 

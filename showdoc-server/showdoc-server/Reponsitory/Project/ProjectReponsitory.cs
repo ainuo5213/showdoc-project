@@ -189,5 +189,22 @@ namespace showdoc_server.Reponsitory.Project
                 UpdateTime = DateTime.Now,
             }).Where(condition).ExecuteCommandAsync();
         }
+
+        public async Task<IEnumerable<SearchProjectItemDTO>> SearchProjectByKeyAsync(int v, string key)
+        {
+            return await SugarContext.Context.Queryable<Projects>()
+                .Where(r => r.Name.Contains(key) && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID != v)
+                .InnerJoin<Users>((project, projectUser, _user) => projectUser.UserID == _user.UserID)
+                .OrderBy((project, projectUser, _user) => project.Name)
+                .Select((project, projectUser, _user) => new SearchProjectItemDTO()
+                {
+                     ProjectID = project.ProjectID,
+                     Creator = _user.Username,
+                     ProjectName = project.Name,
+                })
+                .Take(5)
+                .ToListAsync();
+        }
     }
 }
