@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using showdoc_server.Dtos.Auth;
 using showdoc_server.Filters;
+using showdoc_server.Handler;
 
 namespace showdoc_server
 {
@@ -41,6 +44,11 @@ namespace showdoc_server
                     ValidIssuer = Configuration["Authentication:Issure"],
                 };
             });
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("TokenValidator", policy => policy.AddRequirements(new ValidatorRequirement()));
+            });
+            services.AddScoped<IAuthorizationHandler, ValidatorPolicyHandler>();
             services
                 .AddControllers(opt =>
                 {

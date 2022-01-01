@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using showdoc_server.Dtos.Request.Auth;
+using showdoc_server.Dtos.Request.User;
 using showdoc_server.Dtos.Table;
 using showdoc_server.Reponsitory.User;
 using showdoc_server.Services.Cache.Redis;
@@ -70,7 +71,7 @@ namespace showdoc_server.Services.User
             // payload
             var claims = new[] {
                     new Claim(ClaimTypes.Name, username),
-                    new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString())
                 };
 
             // signiture
@@ -99,6 +100,13 @@ namespace showdoc_server.Services.User
             Users user = this.mapper.Map<Users>(entity);
             int cnt = await this.userReponsitory.ChangePasswordAsync(user);
             return cnt > 0;
+        }
+
+        public async Task<UserInfoDTO> GetUserByIdAsync(int userId)
+        {
+            Users user = await this.userReponsitory.GetUserByIdAsync(userId);
+            UserInfoDTO data = this.mapper.Map<UserInfoDTO>(user);
+            return data;
         }
     }
 }

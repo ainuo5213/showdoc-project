@@ -148,11 +148,11 @@ return:
 
 ## 首页相关
 
-### 【API】获取用户信息
+### 【已完成】【API】获取用户信息
 
 用户信息含用户名、头像地址、邮箱等信息
 
-url: `/api/user/info?userId={userId}`
+url: `/api/user/info`
 
 method: `get`
 
@@ -166,8 +166,7 @@ return:
     email: "",
     cellphone: "",
     username: "",
-    teamId: "",
-    teamName: ""
+    headImg: ""
   }
 }
 ```
@@ -387,9 +386,9 @@ return:
 
 
 
-### 【API】退出登录
+### 【已完成】【API】退出登录
 
-url：`/api/user/logout?id={id}`
+url：`/api/user/logout`
 
 method: `post`
 
