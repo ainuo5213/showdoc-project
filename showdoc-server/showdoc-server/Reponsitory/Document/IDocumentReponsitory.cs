@@ -16,5 +16,6 @@ namespace showdoc_server.Reponsitory.Document
         Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int objectID, string title);
         Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page);
         Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity);
+        Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID);
     }
 }

@@ -61,5 +61,13 @@ namespace showdoc_server.Controllers
             bool data = await this.documentService.UpdateDocument(userID, entity);
             return await this.SuccessAsync(data);
         }
+
+        [HttpGet("historyComparison")]
+        public async Task<IActionResult> HistoryDocumentComparison([FromQuery] int historyID)
+        {
+            int userID = this.GetUserID();
+            HistoryComparisonDTO data = await this.documentService.HistoryDocumentComparison(userID, historyID);
+            return await this.SuccessAsync(data);
+        }
     }
 }

@@ -763,9 +763,9 @@ return:
 
 
 
-### 【API】对比版本
+### 【已完成】【API】对比版本
 
-url：`/api/document/historyDetail?historyID={historyID}`
+url：`/api/document/historyComparison?historyID={historyID}`
 
 method: `get`
 
@@ -781,10 +781,11 @@ return:
       title: "",
       content: "",
       createTime: "",
-      creatorID: ""
+      creatorID: "",
       creator: ""
     },
     historyVersion: {
+      historyID: 0,
       documentID: 0,
       title: "",
       content: "",

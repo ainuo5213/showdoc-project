@@ -55,6 +55,11 @@ namespace showdoc_server.Services.Document
             return await this.documentReponsitory.GetDocumentHistory(userID, documentID, page);
         }
 
+        public async Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID)
+        {
+            return await this.documentReponsitory.HistoryDocumentComparison(userID, historyID);
+        }
+
         public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
         {
             return await this.documentReponsitory.UpdateDocument(userID, entity);

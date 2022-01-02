@@ -178,6 +178,47 @@ namespace showdoc_server.Reponsitory.Document
             };
         }
 
+        public async Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID)
+        {
+            // 仅需查找是否是该项目成员，文档删除与否
+            var query = SugarContext.Context.Queryable<HistoryDocuments>()
+                .Where(historyDocument => historyDocument.HistoryDocumentID == historyID)
+                .InnerJoin<Documents>((historyDocument, document) => historyDocument.DocumentID == document.DocumentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<Projects>((historyDocument, document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((historyDocument, document, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .InnerJoin<Users>((historyDocument, document, project, projectUser, _user) => historyDocument.CreatorID == _user.UserID);
+            var currentVersion = await query.Select((historyDocument, document, project, projectUser, _user) => new HistoryComparisonItemDTO()
+            {
+                Content = document.Content,
+                CreateTime = document.CreateTime,
+                Creator = _user.Username,
+                CreatorID = _user.UserID,
+                DocumentID = document.DocumentID,
+                HistoryID = historyDocument.HistoryDocumentID,
+                Title = document.Title,
+            }).FirstAsync();
+            if (currentVersion == null)
+            {
+                throw new Exception("document has been deleted");
+            }
+            var historyVersion = await query.Select((historyDocument, document, project, projectUser, _user) => new HistoryComparisonItemDTO()
+            {
+                Content = historyDocument.Content,
+                CreateTime = historyDocument.CreateTime,
+                Creator = _user.Username,
+                CreatorID = _user.UserID,
+                DocumentID = historyDocument.DocumentID,
+                HistoryID = historyDocument.HistoryDocumentID,
+                Title = document.Title,
+            }).FirstAsync();
+
+            return new HistoryComparisonDTO()
+            {
+                CurrentVersion = currentVersion,
+                HistoryVersion = historyVersion,
+            };
+        }
+
         public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
         {
             // 是否能保存：1、是否参加这个项目，文档是否存在
