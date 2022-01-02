@@ -20,5 +20,7 @@ namespace showdoc_server.Reponsitory.Document
         Task<int> RollbackDocument(int userID, int historyID);
         Task<int> RenameFolder(int userID, int objectID, string name);
         Task<int> RenameDocument(int userID, int objectID, string name);
+        Task<int> MoveDocument(int userID, int objectID, int folderID);
+        Task<int> MoveFolder(int userID, int objectID, int folderID);
     }
 }

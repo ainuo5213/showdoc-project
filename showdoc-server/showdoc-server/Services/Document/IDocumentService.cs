@@ -17,5 +17,6 @@ namespace showdoc_server.Services.Document
         Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID);
         Task<bool> RollbackDocument(int userID, int historyID);
         Task<bool> RenameDocumentOrFolder(int userID, RenameDocumentOrFolderDTO entity);
+        Task<bool> MoveDocumentOrFolder(int userID, MoveDocumentOrFolderDTO entity);
     }
 }

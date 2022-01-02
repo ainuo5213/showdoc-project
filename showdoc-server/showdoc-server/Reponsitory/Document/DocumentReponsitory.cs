@@ -219,6 +219,72 @@ namespace showdoc_server.Reponsitory.Document
             };
         }
 
+        public async Task<int> MoveDocument(int userID, int documentID, int folderID)
+        {
+            // 移动文档，项目是否是自己参与的，文档删除与否
+            // 文档
+            var document = await SugarContext.Context.Queryable<Documents>()
+                .Where(document => document.DocumentID == documentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<Projects>((document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((document, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((document, project, projectUser) => document).FirstAsync();
+            var folder = await SugarContext.Context.Queryable<Folders>()
+                .Where(folder => folder.FolderID == folderID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .InnerJoin<Projects>((folder, project) => folder.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((folder, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((folder, project, projectUser) => folder).FirstAsync();
+            if (document == null)
+            {
+                throw new Exception("document has been deleted");
+            }
+            if (folder == null && folderID != 0)
+            {
+                throw new Exception("folder has been deleted");
+            }
+
+            return await SugarContext.Context.Updateable<Documents>()
+                .SetColumns(document => new Documents()
+                {
+                    UpdateTime = DateTime.Now,
+                    UpdatorID = userID,
+                    FolderID = folderID,
+                })
+                .Where(document => document.DocumentID == documentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .ExecuteCommandAsync();
+        }
+
+        public async Task<int> MoveFolder(int userID, int folderID, int parentID)
+        {
+            // 移动文件夹需要判断目标文件夹和当前文件夹是否是该用户参与项目的
+            var originFolder = await SugarContext.Context.Queryable<Folders>()
+                .Where(folder => folder.FolderID == folderID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .InnerJoin<Projects>((folder, project) => folder.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((folder, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((folder, project, projectUser) => folder).FirstAsync();
+
+            var targetFolder = await SugarContext.Context.Queryable<Folders>()
+                .Where(folder => folder.ParentID == folderID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .InnerJoin<Projects>((folder, project) => folder.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((folder, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((folder, project, projectUser) => folder).FirstAsync();
+            if (originFolder == null)
+            {
+                throw new Exception("origin folder has been deleted");
+            }
+            if (targetFolder == null && parentID != 0)
+            {
+                throw new Exception("target folder has been deleted");
+            }
+            return await SugarContext.Context.Updateable<Folders>()
+                .SetColumns(document => new Folders()
+                {
+                    UpdateTime = DateTime.Now,
+                    ParentID = parentID,
+                })
+                .Where(folder => folder.FolderID == folderID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .ExecuteCommandAsync();
+        }
+
         public async Task<int> RenameDocument(int userID, int documentID, string name)
         {
             // 查看文档删除与否，项目是否参加

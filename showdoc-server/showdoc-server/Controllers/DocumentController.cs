@@ -85,5 +85,13 @@ namespace showdoc_server.Controllers
             bool data = await this.documentService.RenameDocumentOrFolder(userID, entity);
             return await this.SuccessAsync(data);
         }
+
+        [HttpPost("move")]
+        public async Task<IActionResult> MoveDocumentOrFolder([FromBody] MoveDocumentOrFolderDTO entity)
+        {
+            int userID = this.GetUserID();
+            bool data = await this.documentService.MoveDocumentOrFolder(userID, entity);
+            return await this.SuccessAsync(data);
+        }
     }
 }

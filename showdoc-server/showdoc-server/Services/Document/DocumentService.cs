@@ -60,6 +60,22 @@ namespace showdoc_server.Services.Document
             return await this.documentReponsitory.HistoryDocumentComparison(userID, historyID);
         }
 
+        public async Task<bool> MoveDocumentOrFolder(int userID, MoveDocumentOrFolderDTO entity)
+        {
+            if (entity.ObjectID == 0)
+            {
+                return false;
+            }
+            if (entity.Type == DocumentObjectTypes.Document)
+            {
+                return await this.documentReponsitory.MoveDocument(userID, entity.ObjectID, entity.FolderID) > 0;
+            }
+            else
+            {
+                return await this.documentReponsitory.MoveFolder(userID, entity.ObjectID, entity.FolderID) > 0;
+            }
+        }
+
         public async Task<bool> RenameDocumentOrFolder(int userID, RenameDocumentOrFolderDTO entity)
         {
             if (entity.ObjectID == 0)
