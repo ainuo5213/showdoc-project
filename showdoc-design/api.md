@@ -418,7 +418,9 @@ return:
 
 ## 邀请列表
 
-### 【API】邀请加入项目
+### 【已完成】【API】邀请加入项目
+
+如果是要加入搜索之后的项目，邀请者是
 
 url: `/api/invitation/invite`
 
@@ -428,9 +430,32 @@ data:
 
 ```json
 {
-  invite: 1, // 邀请人ID
   invited: 2, // 被邀请者ID
-  projectID: 3 // 团队ID
+  projectID: 3 // 项目ID
+}
+```
+
+return:
+
+```json
+{
+  errno: 0,
+  errmsg: "",
+  data: null
+}
+```
+
+### 【已完成】【API】申请加入项目
+
+url: `/api/invitation/join`
+
+method: `post`
+
+data: 
+
+```json
+{
+  projectID: 1 // 要加入项目的ID
 }
 ```
 
@@ -446,9 +471,9 @@ return:
 
 
 
-### 【API】获取邀请列表
+### 【已完成】【API】获取邀请列表
 
-url：`/api/invitation/list?page={page}&userID={userID}`
+url：`/api/invitation/list?page={page}`
 
 method: `get`
 
@@ -463,12 +488,13 @@ return:
     items: [
       {
         invitationID: 1,
-        invite: 1,
-        inviteUsername: "",
         invited: 1,
-        invitedUsername: ""
+        invitedUsername: "",
         status: 1,
-        createTime: ""
+        createTime: "",
+        checkTime: "",
+        projectID: 1,
+        projectName: ""
       }
     ]
   }
@@ -477,9 +503,9 @@ return:
 
 
 
-### 【API】接受项目邀请
+### 【已完成】【API】接受项目邀请
 
-url：`/api/invitation/operation`
+url：`/api/invitation/accept`
 
 method: `post`
 
@@ -487,7 +513,6 @@ data:
 
 ```json
 {
-  userID: 0,
   invitationID: 0,
   status: 0
 }
