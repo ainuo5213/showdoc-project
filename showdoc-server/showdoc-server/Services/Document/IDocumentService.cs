@@ -13,5 +13,6 @@ namespace showdoc_server.Services.Document
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
         Task<DocumentContentDTO> CreateDocumentOrFolder(int userID, CreateDocumentOrFolderDTO entity);
         Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page);
+        Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity);
     }
 }

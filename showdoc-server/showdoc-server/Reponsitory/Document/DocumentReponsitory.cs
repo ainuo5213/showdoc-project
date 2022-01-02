@@ -177,5 +177,43 @@ namespace showdoc_server.Reponsitory.Document
                 TotalCount = cnt
             };
         }
+
+        public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
+        {
+            // 是否能保存：1、是否参加这个项目，文档是否存在
+            Documents document = await SugarContext.Context.Queryable<Documents>()
+                .Where(document => document.DocumentID == entity.DocumentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<Projects>((document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((document, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((document, project, projectUser) => document)
+                .FirstAsync();
+            if (document == null)
+            {
+                throw new Exception("document has been deleted");
+            }
+
+            // 添加历史的前提是两次变更的内容对比不一样
+            if (entity.Content == document.Content)
+            {
+                return true;
+            }
+            await SugarContext.Context.Insertable(new HistoryDocuments()
+            {
+                Content = document.Content,
+                CreateTime = DateTime.Now,
+                CreatorID = userID,
+                DocumentID = document.DocumentID,
+            }).ExecuteCommandAsync();
+            await SugarContext.Context.Updateable(document)
+                .SetColumns(r => new Documents()
+                {
+                    UpdateTime = DateTime.Now,
+                    UpdatorID = userID,
+                    Content = entity.Content,
+                })
+                .Where(r => r.DocumentID == entity.DocumentID && r.DeleteStatus == DeleteStatuses.UnDelete)
+                .ExecuteCommandAsync();
+            return true;
+        }
     }
 }

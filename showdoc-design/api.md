@@ -664,7 +664,7 @@ return:
     totalCount: 0,
     items: [
       {
-        userID: 0,
+        historyID: 0,
         creator: "",
         documentID: 0,
         title: "",
@@ -677,9 +677,9 @@ return:
 
 
 
-### 【API】修改文档
+### 【已完成】【API】修改文档
 
-url：`/api/document/save`
+url：`/api/document/update`
 
 method: `post`
 
@@ -687,7 +687,6 @@ data:
 
 ```json
 {
-  userID: 0,
   content: "",
   documentID: 0
 }
@@ -707,7 +706,7 @@ return:
 
 
 
-### 【API】修改文件夹路径
+### 【API】修改文件夹路径或文档路径
 
 url：`/api/document/move`
 
@@ -717,7 +716,6 @@ data:
 
 ```json
 {
-  userID: 0,
   objectID: 0,
   folderID: 0,
   type: 0

@@ -53,5 +53,13 @@ namespace showdoc_server.Controllers
             ListItemDTO<DocumentHistoryDTO> data = await this.documentService.GetDocumentHistory(userID, documentID, page);
             return await this.SuccessAsync(data);
         }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateDocument([FromBody] DocumentUpdateDTO entity)
+        {
+            int userID = this.GetUserID();
+            bool data = await this.documentService.UpdateDocument(userID, entity);
+            return await this.SuccessAsync(data);
+        }
     }
 }
