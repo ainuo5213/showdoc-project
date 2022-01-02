@@ -34,6 +34,7 @@ namespace showdoc_server.Reponsitory.Document
                     Title = title,
                     UpdateTime = DateTime.Now,
                     UpdatorID = userID,
+                    SortTime = DateTime.Now
                 })
                     .ExecuteCommandAsync();
             }
@@ -178,6 +179,43 @@ namespace showdoc_server.Reponsitory.Document
             };
         }
 
+        public async Task<IEnumerable<ProjectMenuItemDTO>> GetProjectMenu(int userID, int projectID)
+        {
+            // 递归查询所以文件夹，再查询所有文件夹下的文件
+            var project = await SugarContext.Context.Queryable<Projects>()
+                .Where(project => project.ProjectID == projectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((project, projectUser) => project)
+                .FirstAsync();
+            if (project == null)
+            {
+                throw new Exception("project has been deleted");
+            }
+            var folders = SugarContext.Context.Queryable<Folders>()
+                .Where(folder => folder.ProjectID == projectID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .Select(folder => new ProjectMenuItemDTO()
+                {
+                    ProjectID = folder.ProjectID,
+                    Name = folder.Name,
+                    Type = DocumentObjectTypes.Folder,
+                    ObjectID = folder.FolderID,
+                    ParentID = folder.ParentID,
+                    SortTime = folder.SortTime,
+                });
+            var documents = SugarContext.Context.Queryable<Documents>()
+                .Where(document => document.ProjectID == projectID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .Select(document => new ProjectMenuItemDTO()
+                {
+                    ProjectID = document.ProjectID,
+                    Name = document.Title,
+                    Type = DocumentObjectTypes.Document,
+                    ObjectID = document.DocumentID,
+                    ParentID = document.FolderID,
+                    SortTime = document.SortTime,
+                });
+            return await SugarContext.Context.Union(folders, documents).OrderBy(entity => entity.SortTime, SqlSugar.OrderByType.Desc).ToListAsync();
+        }
+
         public async Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID)
         {
             // 仅需查找是否是该项目成员，文档删除与否
@@ -248,6 +286,7 @@ namespace showdoc_server.Reponsitory.Document
                     UpdateTime = DateTime.Now,
                     UpdatorID = userID,
                     FolderID = folderID,
+                    SortTime = DateTime.Now,
                 })
                 .Where(document => document.DocumentID == documentID && document.DeleteStatus == DeleteStatuses.UnDelete)
                 .ExecuteCommandAsync();

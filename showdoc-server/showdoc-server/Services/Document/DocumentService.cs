@@ -76,6 +76,11 @@ namespace showdoc_server.Services.Document
             }
         }
 
+        public async Task<IEnumerable<ProjectMenuItemDTO>> ProjectMenu(int userID, int projectID)
+        {
+            return await this.documentReponsitory.GetProjectMenu(userID, projectID);
+        }
+
         public async Task<bool> RenameDocumentOrFolder(int userID, RenameDocumentOrFolderDTO entity)
         {
             if (entity.ObjectID == 0)

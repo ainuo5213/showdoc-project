@@ -18,5 +18,6 @@ namespace showdoc_server.Services.Document
         Task<bool> RollbackDocument(int userID, int historyID);
         Task<bool> RenameDocumentOrFolder(int userID, RenameDocumentOrFolderDTO entity);
         Task<bool> MoveDocumentOrFolder(int userID, MoveDocumentOrFolderDTO entity);
+        Task<IEnumerable<ProjectMenuItemDTO>> ProjectMenu(int userID, int projectID);
     }
 }

@@ -18,6 +18,7 @@ namespace showdoc_server.Dtos.Table
         public int CreatorID { get; set; }
         public int UpdatorID { get; set; }
         public DeleteStatuses DeleteStatus { get; set; } = DeleteStatuses.UnDelete;
+        public DateTime SortTime { get; set; } = DateTime.Now;
         public DateTime CreateTime { get; set; } = DateTime.Now;
         public DateTime UpdateTime { get; set; } = DateTime.Now;
     }

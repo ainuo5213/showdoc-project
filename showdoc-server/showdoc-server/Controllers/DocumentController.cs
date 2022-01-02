@@ -93,5 +93,13 @@ namespace showdoc_server.Controllers
             bool data = await this.documentService.MoveDocumentOrFolder(userID, entity);
             return await this.SuccessAsync(data);
         }
+
+        [HttpGet("menu")]
+        public async Task<IActionResult> ProjectMenu([FromQuery] int projectID)
+        {
+            int userID = this.GetUserID();
+            IEnumerable<ProjectMenuItemDTO> data = await this.documentService.ProjectMenu(userID, projectID);
+            return await this.SuccessAsync(data);
+        }
     }
 }

@@ -534,7 +534,7 @@ return:
 
 ### 【API】获取项目文件夹、文档（左侧数据）
 
-url：`/api/document/menu?projedtID={projectID}`
+url：`/api/document/menu?projectID={projectID}`
 
 method: `get`
 
