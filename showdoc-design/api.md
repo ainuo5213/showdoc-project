@@ -558,7 +558,7 @@ return:
 
 
 
-### 【API】获取文档内容
+### 【已完成】【API】获取文档内容
 
 url：`/api/document/content?documentID={documentID}`
 
@@ -571,10 +571,15 @@ return:
   errno: 0,
   errmsg: "",
   data: {
-    documentID: "",
+    documentID: 1,
     title: "",
     content: "",
-    createTime: ""
+    createTime: "",
+    creator: "",
+    projectName: "",
+    projectID: 1,
+    FolderID: 1,
+    FolderName: "",
   }
 }
 ```

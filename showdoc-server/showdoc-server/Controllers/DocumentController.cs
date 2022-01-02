@@ -28,5 +28,13 @@ namespace showdoc_server.Controllers
             bool data = await this.documentService.DeleteFolderOrDocument(userID, entity);
             return await this.SuccessAsync(data);
         }
+
+        [HttpPost("content")]
+        public async Task<IActionResult> GetDocumentContent([FromQuery] int documentID)
+        {
+            int userID = this.GetUserID();
+            DocumentContentDTO data = await this.documentService.GetDocumentContent(userID, documentID);
+            return await this.SuccessAsync(data);
+        }
     }
 }

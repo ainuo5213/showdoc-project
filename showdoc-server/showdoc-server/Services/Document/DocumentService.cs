@@ -31,5 +31,10 @@ namespace showdoc_server.Services.Document
                 return await this.documentReponsitory.DeleteFolder(userID, entity.ObjectID) > 0;
             }
         }
+
+        public async Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID)
+        {
+            return await this.documentReponsitory.GetDocumentContent(userID, documentID);
+        }
     }
 }

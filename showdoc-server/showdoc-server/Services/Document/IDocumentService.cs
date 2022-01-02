@@ -9,5 +9,6 @@ namespace showdoc_server.Services.Document
     public interface IDocumentService
     {
         Task<bool> DeleteFolderOrDocument(int userID, DeleteFolderOrDocumentDTO entity);
+        Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
     }
 }
