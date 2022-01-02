@@ -4,10 +4,10 @@ import { useToken } from "@/hooks/token";
 
 let url;
 if (isDev()) {
-  // dev is localhost
   url = "http://localhost:9000/";
 } else {
   // production
+  url = "http://www.example.com/";
 }
 
 const instance = axios.create({
@@ -26,11 +26,18 @@ instance.interceptors.request.use((config) => {
   return config;
 });
 
-instance.interceptors.response.use((response) => {
-  // 401：Unauthorize
-    // TODO: 处理异常情况
-  if (response.status === 401) {
-    history.pushState(null, "/login");
+instance.interceptors.response.use(
+  (response) => {
+    // 401：Unauthorize
+    if (response.status === 401) {
+      history.pushState(null, "/login");
+      return Promise.reject("未登录授权");
+    }
+    return response.data;
+  },
+  (error) => {
+    return Promise.reject("请求失败");
   }
-  return response.data;
-});
+);
+
+export default instance
