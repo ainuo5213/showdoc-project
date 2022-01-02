@@ -60,6 +60,11 @@ namespace showdoc_server.Services.Document
             return await this.documentReponsitory.HistoryDocumentComparison(userID, historyID);
         }
 
+        public async Task<bool> RollbackDocument(int userID, int historyID)
+        {
+            return await this.documentReponsitory.RollbackDocument(userID, historyID) > 0;
+        }
+
         public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
         {
             return await this.documentReponsitory.UpdateDocument(userID, entity);

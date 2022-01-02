@@ -799,23 +799,11 @@ return:
 
 
 
-### 【API】回滚到某版本
+### 【已完成】【API】回滚到某版本
 
-url：`/api/document/rollback`
+url：`/api/document/rollback?historyID={123}`
 
-method: `post`
-
-data:
-
-```json
-{
-  documentID: 123,
-  historyID: 123,
-  userID: 123
-}
-```
-
-
+method: `get`
 
 return:
 

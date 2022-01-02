@@ -69,5 +69,13 @@ namespace showdoc_server.Controllers
             HistoryComparisonDTO data = await this.documentService.HistoryDocumentComparison(userID, historyID);
             return await this.SuccessAsync(data);
         }
+
+        [HttpGet("rollback")]
+        public async Task<IActionResult> RollbackDocument([FromQuery] int historyID)
+        {
+            int userID = this.GetUserID();
+            bool data = await this.documentService.RollbackDocument(userID, historyID);
+            return await this.SuccessAsync(data);
+        }
     }
 }

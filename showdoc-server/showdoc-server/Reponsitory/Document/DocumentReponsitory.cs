@@ -219,6 +219,37 @@ namespace showdoc_server.Reponsitory.Document
             };
         }
 
+        public async Task<int> RollbackDocument(int userID, int historyID)
+        {
+            var query = SugarContext.Context.Queryable<HistoryDocuments>()
+                .Where(historyDocument => historyDocument.HistoryDocumentID == historyID)
+                .InnerJoin<Documents>((historyDocument, document) => historyDocument.DocumentID == document.DocumentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<Projects>((historyDocument, document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((historyDocument, document, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID);
+
+            var document = await query.Select((historyDocument, document, project, projectUser) => document).FirstAsync();
+            var historyDocument = await query.Select((historyDocument, document, project, projectUser) => historyDocument).FirstAsync();
+            if (document == null || historyDocument == null)
+            {
+                throw new Exception("history or document has been deleted");
+            }
+            // 将该版本及之后的历史删掉
+            await SugarContext.Context.Deleteable<HistoryDocuments>()
+                .Where(historyDocument => historyDocument.HistoryDocumentID >= historyDocument.HistoryDocumentID && historyDocument.DocumentID == document.DocumentID)
+                .ExecuteCommandAsync();
+            // 将当前版本的内容修改为还原版本的内容
+            await SugarContext.Context.Updateable<Documents>()
+                .SetColumns(document => new Documents()
+                {
+                    Content = historyDocument.Content,
+                    UpdateTime = DateTime.Now,
+                    UpdatorID = userID
+                })
+                .Where(document => document.DocumentID == document.DocumentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .ExecuteCommandAsync();
+            return 1;
+        }
+
         public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
         {
             // 是否能保存：1、是否参加这个项目，文档是否存在
