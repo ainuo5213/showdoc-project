@@ -3,6 +3,7 @@ import { routes } from "./routes";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import userInfo from "@/hooks/userInfo";
+import { MetaData } from "@/types/router";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -11,7 +12,13 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();
-  if (to.meta.requireAuth) {
+  const meta = to.meta as MetaData;
+  if (meta.title) {
+    document.title = meta.title;
+  } else {
+    document.title = to.name?.toString() || "";
+  }
+  if (meta.requireAuth) {
     if (userInfo.userID.value <= 0) {
       next("/login");
     } else {

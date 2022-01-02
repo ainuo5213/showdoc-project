@@ -2,7 +2,7 @@ import { IUserInfo } from "@/types/userInfo/login";
 import { reactive, readonly, toRefs, watch } from "vue";
 
 const data = reactive({
-  userID: 0,
+  userID: 2,
   username: "",
   email: "",
   cellphone: "",
