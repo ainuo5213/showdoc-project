@@ -616,7 +616,7 @@ return:
 
 
 
-### 【API】删除文件夹或删除文档
+### 【已完成】【API】删除文件夹或删除文档
 
 url：`/api/document/delete`
 
@@ -626,9 +626,8 @@ data:
 
 ```json
 {
-  userID: 0,
   objectID: 0,
-  type: 0
+  type: 0 // 文档为0；文件夹为1
 }
 ```
 
