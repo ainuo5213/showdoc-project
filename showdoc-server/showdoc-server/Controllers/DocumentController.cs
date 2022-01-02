@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using showdoc_server.Attributes;
+using showdoc_server.Dtos.Json;
 using showdoc_server.Dtos.Request.Document;
 using showdoc_server.Services.Document;
 
@@ -42,6 +43,14 @@ namespace showdoc_server.Controllers
         {
             int userID = this.GetUserID();
             DocumentContentDTO data = await this.documentService.CreateDocumentOrFolder(userID, entity);
+            return await this.SuccessAsync(data);
+        }
+
+        [HttpGet("history")]
+        public async Task<IActionResult> GetDocumentHistory([FromQuery] int documentID, [FromQuery] int page = 1)
+        {
+            int userID = this.GetUserID();
+            ListItemDTO<DocumentHistoryDTO> data = await this.documentService.GetDocumentHistory(userID, documentID, page);
             return await this.SuccessAsync(data);
         }
     }

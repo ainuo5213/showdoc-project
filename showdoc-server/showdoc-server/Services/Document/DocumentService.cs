@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using showdoc_server.Dtos.Json;
 using showdoc_server.Dtos.Request.Document;
 using showdoc_server.Reponsitory.Document;
 
@@ -47,6 +48,11 @@ namespace showdoc_server.Services.Document
         public async Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID)
         {
             return await this.documentReponsitory.GetDocumentContent(userID, documentID);
+        }
+
+        public async Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page)
+        {
+            return await this.documentReponsitory.GetDocumentHistory(userID, documentID, page);
         }
     }
 }

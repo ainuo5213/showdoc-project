@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using showdoc_server.Dtos.Json;
 using showdoc_server.Dtos.Request.Document;
 
 namespace showdoc_server.Reponsitory.Document
@@ -13,5 +14,6 @@ namespace showdoc_server.Reponsitory.Document
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
         Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int objectID, string title);
         Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int objectID, string title);
+        Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page);
     }
 }

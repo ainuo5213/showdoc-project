@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using showdoc_server.Context;
+using showdoc_server.Dtos.Json;
 using showdoc_server.Dtos.Request.Document;
 using showdoc_server.Dtos.Table;
 
@@ -27,7 +28,7 @@ namespace showdoc_server.Reponsitory.Document
                     Content = string.Empty,
                     CreateTime = DateTime.Now,
                     CreatorID = userID,
-                    DeleteStatus = Dtos.Json.DeleteStatuses.UnDelete,
+                    DeleteStatus = DeleteStatuses.UnDelete,
                     FolderID = folderID,
                     ProjectID = projectID,
                     Title = title,
@@ -148,6 +149,33 @@ namespace showdoc_server.Reponsitory.Document
             }
 
             return data;
+        }
+
+        public async Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page)
+        {
+            // 只能查看当前自己加入的项目中的文档历史
+            var data = SugarContext.Context.Queryable<HistoryDocuments>()
+                .Where(historyDocument => historyDocument.DocumentID == documentID)
+                .InnerJoin<Documents>((historyDocument, document) => historyDocument.DocumentID == document.DocumentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<Projects>((historyDocument, document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((historyDocument, document, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .InnerJoin<Users>((historyDocument, document, project, projectUser, _user) => historyDocument.CreatorID == _user.UserID)
+                .Select((historyDocument, document, project, projectUser, _user) => new DocumentHistoryDTO()
+                {
+                    DocumentID = document.DocumentID,
+                    CreateTime = historyDocument.CreateTime,
+                    Creator = _user.Username,
+                    HistoryID = historyDocument.HistoryDocumentID,
+                    Title = document.Title,
+                });
+            int cnt = await data.CountAsync();
+            IEnumerable<DocumentHistoryDTO> res = await data.OrderBy(r => r.CreateTime, SqlSugar.OrderByType.Desc).ToPageListAsync(page, 20);
+
+            return new ListItemDTO<DocumentHistoryDTO>()
+            {
+                Items = res,
+                TotalCount = cnt
+            };
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using showdoc_server.Dtos.Json;
 using showdoc_server.Dtos.Request.Document;
 
 namespace showdoc_server.Services.Document
@@ -11,5 +12,6 @@ namespace showdoc_server.Services.Document
         Task<bool> DeleteFolderOrDocument(int userID, DeleteFolderOrDocumentDTO entity);
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
         Task<DocumentContentDTO> CreateDocumentOrFolder(int userID, CreateDocumentOrFolderDTO entity);
+        Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page);
     }
 }
