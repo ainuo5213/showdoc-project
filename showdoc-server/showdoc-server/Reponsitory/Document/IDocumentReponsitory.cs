@@ -11,5 +11,7 @@ namespace showdoc_server.Reponsitory.Document
         Task<int> DeleteDocument(int userID, int documentID);
         Task<int> DeleteFolder(int userID, int folderID);
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
+        Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int objectID, string title);
+        Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int objectID, string title);
     }
 }

@@ -29,11 +29,19 @@ namespace showdoc_server.Controllers
             return await this.SuccessAsync(data);
         }
 
-        [HttpPost("content")]
+        [HttpGet("content")]
         public async Task<IActionResult> GetDocumentContent([FromQuery] int documentID)
         {
             int userID = this.GetUserID();
             DocumentContentDTO data = await this.documentService.GetDocumentContent(userID, documentID);
+            return await this.SuccessAsync(data);
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateDocumentOrFolder([FromBody] CreateDocumentOrFolderDTO entity)
+        {
+            int userID = this.GetUserID();
+            DocumentContentDTO data = await this.documentService.CreateDocumentOrFolder(userID, entity);
             return await this.SuccessAsync(data);
         }
     }

@@ -10,6 +10,65 @@ namespace showdoc_server.Reponsitory.Document
 {
     public class DocumentReponsitory : IDocumentReponsitory
     {
+        public async Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int folderID, string title)
+        {
+            // 是否是自己的参与的项目，且文件夹是否存在
+            bool canIncrease = await SugarContext.Context.Queryable<Folders>()
+                .Where(folder => folder.FolderID == folderID && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .InnerJoin<Projects>((folder, project) => folder.ProjectID == project.ProjectID && project.ProjectID == projectID && project.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((folder, project, projectUser) => projectUser.ProjectID == project.ProjectID && projectUser.UserID == userID)
+                .AnyAsync();
+
+            // 如果可以增加或folderID=0
+            if (canIncrease || folderID == 0)
+            {
+                await SugarContext.Context.Insertable(new Documents()
+                {
+                    Content = string.Empty,
+                    CreateTime = DateTime.Now,
+                    CreatorID = userID,
+                    DeleteStatus = Dtos.Json.DeleteStatuses.UnDelete,
+                    FolderID = folderID,
+                    ProjectID = projectID,
+                    Title = title,
+                    UpdateTime = DateTime.Now,
+                    UpdatorID = userID,
+                })
+                    .ExecuteCommandAsync();
+            }
+
+            throw new Exception("folder is not valid");
+        }
+
+        public async Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int folderID, string title)
+        {
+            // 是否是自己的参与的项目，且文件夹是否存在
+            bool canIncrease = await SugarContext.Context.Queryable<Folders>()
+                .Where(folder => folder.FolderID == folderID && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .InnerJoin<Projects>((folder, project) => folder.ProjectID == project.ProjectID && project.ProjectID == projectID && project.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((folder, project, projectUser) => projectUser.ProjectID == project.ProjectID && projectUser.UserID == userID)
+                .AnyAsync();
+            // 如果可以增加或folderID=0
+            if (canIncrease || folderID == 0)
+            {
+                await SugarContext.Context.Insertable(new Folders()
+                {
+                    UpdateTime = DateTime.Now,
+                    CreateTime = DateTime.Now,
+                    CreatorID = userID,
+                    DeleteStatus = Dtos.Json.DeleteStatuses.UnDelete,
+                    Name = title,
+                    ParentID = folderID,
+                    ProjectID = projectID,
+                    SortTime = DateTime.Now,
+                    Type = Dtos.Request.Folder.FolderTypes.DocumentFolder,
+                })
+                    .ExecuteCommandAsync();
+            }
+
+            throw new Exception("folder is not valid");
+        }
+
         public async Task<int> DeleteDocument(int userID, int documentID)
         {
             // 是否是文档创建者创建的

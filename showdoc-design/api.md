@@ -586,9 +586,9 @@ return:
 
 
 
-### 【API】新建文档或新建文件夹
+### 【已完成】【API】新建文档或新建文件夹
 
-url：`/api/document/new`
+url：`/api/document/create`
 
 method: `get`
 
@@ -596,10 +596,10 @@ data:
 
 ```json
 {
-  userID: 0,
   folderID: 0,
+  projectID: 0,
   title: "",
-  type: 0
+  type: 0 // 0：文档；1：文件夹
 }
 ```
 

@@ -10,5 +10,6 @@ namespace showdoc_server.Services.Document
     {
         Task<bool> DeleteFolderOrDocument(int userID, DeleteFolderOrDocumentDTO entity);
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
+        Task<DocumentContentDTO> CreateDocumentOrFolder(int userID, CreateDocumentOrFolderDTO entity);
     }
 }
