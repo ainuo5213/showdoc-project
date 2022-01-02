@@ -16,5 +16,6 @@ namespace showdoc_server.Services.Document
         Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity);
         Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID);
         Task<bool> RollbackDocument(int userID, int historyID);
+        Task<bool> RenameDocumentOrFolder(int userID, RenameDocumentOrFolderDTO entity);
     }
 }

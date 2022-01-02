@@ -77,5 +77,13 @@ namespace showdoc_server.Controllers
             bool data = await this.documentService.RollbackDocument(userID, historyID);
             return await this.SuccessAsync(data);
         }
+
+        [HttpPost("rename")]
+        public async Task<IActionResult> RenameDocumentOrFolder([FromBody] RenameDocumentOrFolderDTO entity)
+        {
+            int userID = this.GetUserID();
+            bool data = await this.documentService.RenameDocumentOrFolder(userID, entity);
+            return await this.SuccessAsync(data);
+        }
     }
 }

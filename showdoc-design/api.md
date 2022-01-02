@@ -734,7 +734,7 @@ return:
 
 
 
-### 【API】重命名文档或文件夹
+### 【已完成】【API】重命名文档或文件夹
 
 url：`/api/document/rename`
 
@@ -744,7 +744,6 @@ data:
 
 ```json
 {
-  userID: 0,
   objectID: 0,
   name: "",
   type: 0

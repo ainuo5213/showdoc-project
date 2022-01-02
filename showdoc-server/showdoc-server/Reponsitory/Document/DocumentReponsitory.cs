@@ -219,6 +219,54 @@ namespace showdoc_server.Reponsitory.Document
             };
         }
 
+        public async Task<int> RenameDocument(int userID, int documentID, string name)
+        {
+            // 查看文档删除与否，项目是否参加
+            var document = await SugarContext.Context.Queryable<Documents>()
+                .Where(document => document.DocumentID == documentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<Projects>((document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((document, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((document, project, projectUser) => document)
+                .FirstAsync();
+            if (document == null)
+            {
+                throw new Exception("document has been deleted");
+            }
+
+            return await SugarContext.Context.Updateable<Documents>()
+                .SetColumns(document => new Documents()
+                {
+                    Title = name,
+                    UpdateTime = DateTime.Now,
+                    UpdatorID = userID
+                })
+                .Where(document => document.DocumentID == documentID && document.DeleteStatus == DeleteStatuses.UnDelete)
+                .ExecuteCommandAsync();
+        }
+
+        public async Task<int> RenameFolder(int userID, int folderID, string name)
+        {
+            // 查看文件夹删除与否，项目是否参加
+            var folder = await SugarContext.Context.Queryable<Folders>()
+                .Where(folder => folder.FolderID == folderID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .InnerJoin<Projects>((folder, project) => folder.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<ProjectUsers>((folder, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Select((folder, project, projectUser) => folder)
+                .FirstAsync();
+            if (folder == null)
+            {
+                throw new Exception("folder has been deleted");
+            }
+            return await SugarContext.Context.Updateable<Folders>()
+                .SetColumns(document => new Folders()
+                {
+                    Name = name,
+                    UpdateTime = DateTime.Now,
+                })
+                .Where(folder => folder.FolderID == folderID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
+                .ExecuteCommandAsync();
+        }
+
         public async Task<int> RollbackDocument(int userID, int historyID)
         {
             var query = SugarContext.Context.Queryable<HistoryDocuments>()
