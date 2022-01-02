@@ -1,29 +1,11 @@
-# showdoc-frontend
+### 摘要
 
-## Project setup
-```
-yarn install
-```
+showdoc 前端基于 vue3.0，UI 框架部分使用`element-plus`
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+技术栈主要是：`vue3`+`element-plus`+`vue-router4`
 
-### Compiles and minifies for production
-```
-yarn build
-```
+### 收获与感悟
 
-### Run your unit tests
-```
-yarn test:unit
-```
+深入理解vue响应式系统原理
 
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+vue插件的封装和使用
