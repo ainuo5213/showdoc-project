@@ -532,7 +532,7 @@ return:
 
 ## 项目详情
 
-### 【API】获取项目文件夹、文档（左侧数据）
+### 【已完成】【API】获取项目文件夹、文档（左侧数据）
 
 url：`/api/document/menu?projectID={projectID}`
 
