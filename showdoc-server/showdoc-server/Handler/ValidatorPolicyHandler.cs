@@ -23,7 +23,8 @@ namespace showdoc_server.Handler
             string id = context?.User?.Claims?.ToList()?.FirstOrDefault(r => r.Type == ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(id))
             {
-                throw new Exception("invalid user");
+                context.Fail();
+                return Task.CompletedTask;
             }
             string key = this.redisService.Key("token", id);
 
