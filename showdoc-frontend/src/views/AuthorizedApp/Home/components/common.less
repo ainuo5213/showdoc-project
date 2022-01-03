@@ -1,0 +1,47 @@
+@import url("~@/assets/less/mixin.less");
+
+.el-input {
+    width: 80%;
+}
+
+.entity-selected {
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1)
+}
+
+.item-container {
+    width: 180px;
+    height: 130px;
+    padding-bottom: 10px;
+
+    .el-card {
+        height: 100%;
+        border: none;
+        cursor: pointer;
+    }
+
+    .item {
+        height: 90px;
+        text-align: center;
+        position: relative;
+
+        img {
+            height: 60px;
+            .center();
+
+            &.folder {
+                height: 90px;
+            }
+        }
+    }
+
+    .title-container {
+        height: 40px;
+        padding: 5px;
+        box-sizing: border-box;
+        text-align: center;
+
+        .title {
+            font-size: 12px;
+        }
+    }
+}

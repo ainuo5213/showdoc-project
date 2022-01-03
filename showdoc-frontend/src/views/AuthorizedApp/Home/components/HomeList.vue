@@ -1,5 +1,5 @@
 <template>
-  <div class="homelist-container">
+  <div class="homelist-container" @contextmenu.stop.prevent="onContextMenu">
     <ul>
       <li
         v-for="item in data"
@@ -21,6 +21,7 @@ import { defineComponent, PropType } from "vue-demi";
 import FolderItem from "./FolderItem.vue";
 import ProjectItem from "./ProjectItem.vue";
 import { IProjectItem, ProjectItemEnums } from "@/types/project";
+import { openContextMenuWithEntity } from "@/hooks/contextmenu";
 
 export default defineComponent({
   components: {
@@ -34,8 +35,25 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const onContextMenu = (e: MouseEvent) => {
+      openContextMenuWithEntity(
+        {
+          userID: 0,
+          sortTime: "",
+          createTime: "",
+          name: "",
+          objectID: 0,
+          parentID: 0,
+          type: ProjectItemEnums.None,
+        },
+        e,
+        true,
+        ProjectItemEnums.Space
+      );
+    };
     return {
       folderEnum: ProjectItemEnums.Folder,
+      onContextMenu,
     };
   },
 });
@@ -45,6 +63,23 @@ export default defineComponent({
 .homelist-container {
   margin-top: 20px;
   height: 100%;
+  overflow-y: auto;
+  & > * {
+    user-select: none;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #0003;
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 }
 ul {
   li {

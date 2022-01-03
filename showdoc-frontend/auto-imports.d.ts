@@ -8,6 +8,5 @@ declare global {
   const ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
   const ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
   const ElInput: typeof import('element-plus/es')['ElInput']
-  const ElTooltip: typeof import('element-plus/es')['ElTooltip']
 }
 export {}
