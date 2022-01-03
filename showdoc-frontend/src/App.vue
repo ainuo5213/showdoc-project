@@ -6,4 +6,9 @@
 export default {};
 </script>
 
-<style></style>
+<style>
+#app {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  padding: 20px;
+}
+</style>

@@ -5,8 +5,14 @@
         <span class="greet"
           >Hi: {{ username }}<span>{{ greetHello() }}</span></span
         >
-        <el-dropdown trigger="click">
-          <span class="el-dropdown-link">
+        <el-dropdown>
+          <span
+            class="el-dropdown-link"
+            :style="{
+              cursor: $route.path === '/home' ? 'default' : 'pointer',
+            }"
+            @click="$router.push({ name: 'home' })"
+          >
             <el-avatar
               fit="cover"
               shape="square"
@@ -16,7 +22,7 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>
+              <el-dropdown-item @click="$router.push({ name: 'userInfo' })">
                 <icon :size="20" name="gerenxinxi-"></icon>
                 <span>我的信息</span>
               </el-dropdown-item>
@@ -65,7 +71,7 @@ export default defineComponent({
     return {
       ...userInfo,
       greetHello,
-      onLogout
+      onLogout,
     };
   },
 });
@@ -73,10 +79,14 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .main {
-  width: 100%;
+  width: 70%;
   height: 100%;
+  margin: 0 auto;
   box-sizing: border-box;
   padding: 20px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
   .header {
     width: 100%;
     height: 40px;

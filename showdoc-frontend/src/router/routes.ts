@@ -22,12 +22,29 @@ export const routes = [
     component: () => import("@/components/Layout/index.vue"),
     children: [
       {
-        path: "/home",
+        path: "home",
         name: "index",
         component: () => import("@/views/AuthorizedApp/Home/index.vue"),
         meta: {
           requireAuth: true,
           title: "我的项目",
+        },
+      },
+    ],
+  },
+  {
+    path: "/userInfo",
+    redirect: "/userInfo/index",
+    name: "userInfo",
+    component: () => import("@/components/Layout/index.vue"),
+    children: [
+      {
+        path: "index",
+        name: "userInfo",
+        component: () => import("@/views/AuthorizedApp/UserInfo/index.vue"),
+        meta: {
+          requireAuth: true,
+          title: "我的信息",
         },
       },
     ],

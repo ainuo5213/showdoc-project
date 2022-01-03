@@ -5,6 +5,10 @@ import "nprogress/nprogress.css";
 import userInfo from "@/hooks/userInfo";
 import { MetaData } from "@/types/router";
 
+NProgress.configure({
+  showSpinner: false,
+});
+
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
