@@ -1,5 +1,5 @@
 <template>
-  <router-view></router-view>
+  <h1>this is register page</h1>
 </template>
 
 <script>

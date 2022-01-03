@@ -54,13 +54,15 @@ namespace showdoc_server.Services.User
             {
                 token = GenToken(user.UserID, user.UserID.ToString());
             }
-            this.redisService.Set(key, token, TimeSpan.FromDays(30));
+            var expires = TimeSpan.FromDays(30);
+            this.redisService.Set(key, token, expires);
             return new LoginResultDTO()
             {
                 HeadImg = user.HeadImg,
                 Username = user.Username,
                 UserID = user.UserID,
                 Token = token,
+                Expires = DateTime.Now.Add(expires),
             };
         }
 
