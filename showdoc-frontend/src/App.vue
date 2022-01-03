@@ -34,7 +34,7 @@ export default defineComponent({
   padding: 20px;
   box-sizing: border-box;
   max-height: 100vh;
-  max-width: 100vh;
+  max-width: 100vw;
   overflow: hidden;
 }
 </style>
