@@ -1,7 +1,7 @@
 <template>
-    <h1>
-        this is layout component
-    </h1>
+    <header class="header">
+        
+    </header>
     <!-- 子路由出口 -->
     <router-view></router-view>
 </template>
@@ -10,4 +10,9 @@
 export default {};
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.header {
+    height: 40px;
+    
+}
+</style>

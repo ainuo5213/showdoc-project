@@ -1,7 +1,17 @@
+const AutoImport = require('unplugin-auto-import/webpack')
+const Components = require('unplugin-vue-components/webpack')
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+
 module.exports = {
-  pluginOptions: {
-    vuetify: {
-      // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
-    },
-  },
-};
+  // ...
+  configureWebpack: {
+    plugins: [
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
+    ],
+  }
+}
