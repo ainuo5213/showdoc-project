@@ -69,23 +69,28 @@ export default defineComponent({
       );
     });
     const submitForm = async () => {
-      formRef.value!.validate((valid: boolean) => {
-        return valid;
-      });
-
-      let res: IDataResult<ILoginResult> = await request({
-        url: "/api/auth/login",
-        method: "POST",
-        data: state.form,
-      });
-      if (res.errno == 0) {
-        setToken({
-          userID: res.data.userID,
-          token: res.data.token,
-          expires: res.data.expires,
+      formRef
+        .value!.validate((valid: boolean) => {
+          if (!valid) {
+            throw new Error("invalid");
+          }
+          return valid;
+        })
+        .then(async () => {
+          let res: IDataResult<ILoginResult> = await request({
+            url: "/api/auth/login",
+            method: "POST",
+            data: state.form,
+          });
+          if (res.errno == 0) {
+            setToken({
+              userID: res.data.userID,
+              token: res.data.token,
+              expires: res.data.expires,
+            });
+            router.push({ name: "home" });
+          }
         });
-        router.push({ name: "home" });
-      }
     };
     return {
       form: state.form,

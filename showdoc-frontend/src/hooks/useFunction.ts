@@ -46,15 +46,32 @@ export function useEntitySelection(data: IProjectItem) {
   };
 }
 
-export function useRequest<T>() {
+export function useRequest<T>(delay?: number) {
   const loadingRef = ref(false);
-  const request: (config: AxiosRequestConfig<any>) => Promise<IDataResult<T>> = async (config: AxiosRequestConfig<any>) => {
+  const delayRef = ref(delay || 0);
+  const showDelayRef = ref(delayRef.value > 0);
+  const request: (
+    config: AxiosRequestConfig<any>
+  ) => Promise<IDataResult<T>> = async (config: AxiosRequestConfig<any>) => {
     let res: any;
     try {
       loadingRef.value = true;
       res = await axios(config);
+      showDelayRef.value = delay && delay > 0 && res.errno == 0 && res.data;
+      if (showDelayRef.value) {
+        setInterval(() => {
+          if (delayRef.value <= 0) {
+            delayRef.value = 0;
+            loadingRef.value = false;
+          } else {
+            delayRef.value = delayRef.value - 1;
+          }
+        }, 1000);
+      }
     } finally {
-      loadingRef.value = false;
+      if (!showDelayRef.value) {
+        loadingRef.value = false;
+      }
     }
     return res as IDataResult<T>;
   };
@@ -62,5 +79,6 @@ export function useRequest<T>() {
   return {
     request,
     loading: loadingRef,
+    delay: delayRef,
   };
 }
