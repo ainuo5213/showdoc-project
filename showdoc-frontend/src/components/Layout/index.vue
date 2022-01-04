@@ -47,6 +47,8 @@
 <script lang="ts">
 import { defineComponent } from "vue-demi";
 import { default as userInfo, setUserInfo } from "@/hooks/userInfo";
+import { clearToken } from "@/hooks/token";
+import {} from "@/hooks/token";
 import { greetHello } from "@/utils/time";
 import Icon from "@/components/Icon/index.vue";
 import { useRouter } from "vue-router";
@@ -65,7 +67,7 @@ export default defineComponent({
         cellphone: "",
         headImg: "",
       });
-      // TODO: logout api
+      clearToken();
       router.push({ name: "login" });
     };
     return {
@@ -102,5 +104,11 @@ export default defineComponent({
       }
     }
   }
+}
+::v-deep(.el-dropdown-menu__item) {
+  width: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
 }
 </style>

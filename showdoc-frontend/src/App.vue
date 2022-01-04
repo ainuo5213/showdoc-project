@@ -3,8 +3,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, onMounted } from "vue-demi";
 import { closeContextMenu } from "@/hooks/contextmenu";
+import { defineComponent, onBeforeMount, onMounted } from "vue-demi";
+
 
 export default defineComponent({
   setup() {
@@ -14,7 +15,7 @@ export default defineComponent({
     const onAppContextMenu = function (e: MouseEvent) {
       closeContextMenu();
     };
-    onMounted(() => {
+    onMounted(async () => {
       const app = document.getElementById("app");
       app!.addEventListener("click", onAppClick);
       app!.addEventListener("contextmenu", onAppContextMenu);

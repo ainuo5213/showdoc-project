@@ -10,9 +10,6 @@ const source = reactive({
   userID: tokenInfo.userID || 0,
 });
 const state = toRefs(readonly(source));
-watch(source, (value) => {
-  setStorageToken(value);
-});
 
 export default state;
 export const setToken = (data: IToken) => {
@@ -20,3 +17,24 @@ export const setToken = (data: IToken) => {
   source.expires = data.expires;
   source.userID = data.userID;
 };
+
+export const clearToken = () => {
+  source.token = "";
+  source.expires = dayjs().toISOString();
+  source.userID = 0;
+};
+
+if (dayjs(tokenInfo.expires).isAfter(dayjs())) {
+  clearToken();
+}
+
+watch(source, (value) => {
+  setStorageToken(value);
+});
+
+// 每一个小时检查token是否过期，如果过期就清理token，token过期之后就发起请求就会报错，跳转到登录页
+setInterval(() => {
+  if (dayjs(tokenInfo.expires).isAfter(dayjs())) {
+    clearToken();
+  }
+}, 1000 * 60 * 60);
