@@ -27,7 +27,7 @@ namespace showdoc_server.Controllers
         {
             if (entity.ProjectID == 0)
             {
-                throw new Exception("project is not available");
+                throw new Exception("项目不存在");
             }
             int invite = this.GetUserID();
             bool data = await this.invitationService.InviteJoinProject(invite, entity.Invited, entity.ProjectID);
@@ -40,7 +40,7 @@ namespace showdoc_server.Controllers
         {
             if (entity.ProjectID == 0)
             {
-                throw new Exception("project is not available");
+                throw new Exception("项目不存在");
             }
             int applyID = this.GetUserID();
             bool data = await this.invitationService.JoinProject(applyID, entity.ProjectID);

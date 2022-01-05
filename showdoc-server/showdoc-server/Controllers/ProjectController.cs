@@ -34,7 +34,7 @@ namespace showdoc_server.Controllers
         {
             if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
             {
-                throw new System.Exception("not supported object type");
+                throw new System.Exception("不支持的文件类型");
             }
             ProjectListItemDTO data = await this.projectService.CreateFolderOrProjectAsync(this.GetUserID(), entity);
             return await this.SuccessAsync(data);
@@ -45,7 +45,7 @@ namespace showdoc_server.Controllers
         {
             if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
             {
-                throw new System.Exception("not supported object type");
+                throw new System.Exception("不支持的文件类型");
             }
             bool data = await this.projectService.DeleteFolderOrProjectAsync(this.GetUserID(), entity);
             return await this.SuccessAsync(data);
@@ -56,7 +56,7 @@ namespace showdoc_server.Controllers
         {
             if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
             {
-                throw new System.Exception("not supported object type");
+                throw new System.Exception("不支持的文件类型");
             }
             bool data = await this.projectService.MoveFolderOrProjectAsync(this.GetUserID(), entity);
             return await this.SuccessAsync(data);
@@ -67,7 +67,7 @@ namespace showdoc_server.Controllers
         {
             if (entity.Type != ProjectListItemTypes.Folder && entity.Type != ProjectListItemTypes.Project)
             {
-                throw new System.Exception("not supported object type");
+                throw new System.Exception("不支持的文件类型");
             }
             bool data = await this.projectService.RenameFolderOrProjectAsync(this.GetUserID(), entity);
             return await this.SuccessAsync(data);

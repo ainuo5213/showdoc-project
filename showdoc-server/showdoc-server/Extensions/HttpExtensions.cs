@@ -14,7 +14,7 @@ namespace Microsoft.AspNetCore.Mvc
             Claim claim = controllerBase.User.Claims.ToList().FirstOrDefault(r => r.Type == ClaimTypes.NameIdentifier);
             if (claim == null)
             {
-                throw new Exception("invalid user");
+                throw new Exception("访问非法");
             }
             return Convert.ToInt32(claim.Value);
         }

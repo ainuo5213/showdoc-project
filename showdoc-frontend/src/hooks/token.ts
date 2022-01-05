@@ -20,7 +20,6 @@ export const clearToken = () => {
   source.userID = 0;
 };
 
-console.log(state);
 if (dayjs(tokenInfo.expires).isBefore(dayjs())) {
   clearToken();
 }

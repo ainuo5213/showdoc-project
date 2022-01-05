@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using showdoc_server.Dtos.Json;
 using showdoc_server.Dtos.Request.Auth;
 using showdoc_server.Dtos.Request.User;
 using showdoc_server.Dtos.Table;
@@ -34,6 +35,7 @@ namespace showdoc_server.Services.User
         {
             Users user = this.mapper.Map<Users>(entity);
             int cnt = await this.userReponsitory.AddUserAsync(user);
+            this.redisService.Delete(SmsTypes.Register.ToString());
             return cnt > 0;
         }
 
@@ -42,11 +44,11 @@ namespace showdoc_server.Services.User
             Users user = await this.userReponsitory.GetUserByPhoneAsync(entity.Cellphone);
             if (user == null)
             {
-                throw new Exception("user is not register");
+                throw new Exception("用户未注册");
             }
             if (MD5Hash.Hash.Content(entity.Password) != user.Password)
             {
-                throw new Exception("user password is not currect");
+                throw new Exception("密码错误");
             }
             string key = this.redisService.Key("token", user.UserID.ToString());
             string token = this.redisService.Get(key);
@@ -102,6 +104,7 @@ namespace showdoc_server.Services.User
         {
             Users user = this.mapper.Map<Users>(entity);
             int cnt = await this.userReponsitory.ChangePasswordAsync(user);
+            this.redisService.Delete(SmsTypes.ForgetPassword.ToString());
             return cnt > 0;
         }
 

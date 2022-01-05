@@ -9,12 +9,20 @@
       }"
     >
       <ul>
+        <li v-show="showEntityOperation" @click.stop.prevent="onView">查看</li>
+        <li
+          v-show="showSpaceOperation && showRetunOperation"
+          @click.stop.prevent="onReturn"
+        >
+          返回
+        </li>
         <li v-show="showEntityOperation" @click.stop.prevent="onRename">
           重命名
         </li>
         <li v-show="showEntityOperation" @click.stop.prevent="onDelete">
           删除
         </li>
+
         <li v-show="showSpaceOperation" @click.stop.prevent="onNewFolder">
           新建文件夹
         </li>
@@ -28,9 +36,6 @@
           @click.stop.prevent="onPaste"
         >
           粘贴
-        </li>
-        <li v-show="showSpaceOperation" @click.stop.prevent="onRefresh">
-          刷新
         </li>
       </ul>
     </div>
@@ -46,11 +51,19 @@ import {
   closeContextMenu,
   clearClipboard,
 } from "@/hooks/contextmenu";
-import { EntityMode } from "@/types/project";
+import { EntityMode, ProjectItemEnums } from "@/types/project";
+import { useRoute, useRouter } from "vue-router";
+import {
+  pushFolder,
+  default as folders,
+  removeChildFolders,
+} from "@/hooks/folder";
 
 export default defineComponent({
   name: "ContextMenu",
   setup() {
+    const router = useRouter();
+    const route = useRoute();
     const positioRef = computed(() => {
       if (contextmenuData.contextmenuEvent?.value) {
         return {
@@ -102,15 +115,43 @@ export default defineComponent({
     const onRename = (e: MouseEvent) => {
       console.log(e);
     };
-    const onRefresh = (e: MouseEvent) => {
-      console.log(e);
-    };
     const onCut = (e: MouseEvent) => {
       copyToClipBard(EntityMode.Cut);
       closeContextMenu();
     };
     const onCopy = (e: MouseEvent) => {
       copyToClipBard(EntityMode.Copy);
+      closeContextMenu();
+    };
+    const onView = (e: MouseEvent) => {
+      if (contextmenuData.entity.value.type == ProjectItemEnums.Folder) {
+        // router跳转
+        router.replace({
+          name: "home",
+          query: { folderID: contextmenuData.entity.value.objectID },
+        });
+        // folder设置
+        pushFolder({
+          folderID: contextmenuData.entity.value.objectID,
+          parentID: contextmenuData.entity.value.parentID,
+          name: contextmenuData.entity.value.name,
+        });
+      }
+      closeContextMenu();
+    };
+    const onReturn = (e: MouseEvent) => {
+      // router跳转：判断是否是点击空白区域，且folder历史存在
+      if (
+        folders.folders.value.length &&
+        contextmenuData.contxtMenuType.value == ProjectItemEnums.Space
+      ) {
+        const folder = folders.folders.value[folders.folders.value.length - 1];
+        router.replace({
+          name: "home",
+          query: { folderID: folder.parentID },
+        });
+        removeChildFolders(folder.parentID);
+      }
       closeContextMenu();
     };
     const onPaste = (e: MouseEvent) => {
@@ -120,6 +161,9 @@ export default defineComponent({
       clearClipboard();
       closeContextMenu();
     };
+    const showRetunOperation = computed(() => {
+      return folders.folders.value.length > 0;
+    });
     return {
       contextmenuData,
       position: positioRef,
@@ -127,14 +171,16 @@ export default defineComponent({
       onRename,
       onNewFolder,
       onNewProject,
-      onRefresh,
       onCopy,
       onPaste,
       onCut,
+      onView,
+      onReturn,
       showSpaceOperation,
       showEntityOperation,
       hasClipboardEntity,
       showCutOperation,
+      showRetunOperation,
     };
   },
 });

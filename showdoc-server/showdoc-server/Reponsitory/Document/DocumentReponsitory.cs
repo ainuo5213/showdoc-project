@@ -39,7 +39,7 @@ namespace showdoc_server.Reponsitory.Document
                     .ExecuteCommandAsync();
             }
 
-            throw new Exception("folder is not valid");
+            throw new Exception("文件夹不存在");
         }
 
         public async Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int folderID, string title)
@@ -68,7 +68,7 @@ namespace showdoc_server.Reponsitory.Document
                     .ExecuteCommandAsync();
             }
 
-            throw new Exception("folder is not valid");
+            throw new Exception("文件夹不存在");
         }
 
         public async Task<int> DeleteDocument(int userID, int documentID)
@@ -78,7 +78,7 @@ namespace showdoc_server.Reponsitory.Document
                 .AnyAsync(document => document.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && document.CreatorID == userID && document.DocumentID == documentID);
             if (isMine)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
 
             return await SugarContext.Context.Updateable<Documents>()
@@ -98,7 +98,7 @@ namespace showdoc_server.Reponsitory.Document
                 .AnyAsync(folder => folder.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && folder.CreatorID == userID && folder.FolderID == folderID && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder);
             if (!isMine)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
 
             // 文档下是否还有子文件
@@ -107,7 +107,7 @@ namespace showdoc_server.Reponsitory.Document
 
             if (hasChildFolders || hasChildDocuments)
             {
-                throw new Exception("folder is using. if you want to delete the folder, please delete the children at first");
+                throw new Exception("文件夹正在使用");
             }
 
             return await SugarContext.Context.Updateable<Folders>()
@@ -146,7 +146,7 @@ namespace showdoc_server.Reponsitory.Document
                .FirstAsync();
             if (data == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
 
             return data;
@@ -189,7 +189,7 @@ namespace showdoc_server.Reponsitory.Document
                 .FirstAsync();
             if (project == null)
             {
-                throw new Exception("project has been deleted");
+                throw new Exception("项目不存在");
             }
             var folders = SugarContext.Context.Queryable<Folders>()
                 .Where(folder => folder.ProjectID == projectID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
@@ -237,7 +237,7 @@ namespace showdoc_server.Reponsitory.Document
             }).FirstAsync();
             if (currentVersion == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
             var historyVersion = await query.Select((historyDocument, document, project, projectUser, _user) => new HistoryComparisonItemDTO()
             {
@@ -273,11 +273,11 @@ namespace showdoc_server.Reponsitory.Document
                 .Select((folder, project, projectUser) => folder).FirstAsync();
             if (document == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
             if (folder == null && folderID != 0)
             {
-                throw new Exception("folder has been deleted");
+                throw new Exception("项目不存在");
             }
 
             return await SugarContext.Context.Updateable<Documents>()
@@ -308,11 +308,11 @@ namespace showdoc_server.Reponsitory.Document
                 .Select((folder, project, projectUser) => folder).FirstAsync();
             if (originFolder == null)
             {
-                throw new Exception("origin folder has been deleted");
+                throw new Exception("文件夹不存在");
             }
             if (targetFolder == null && parentID != 0)
             {
-                throw new Exception("target folder has been deleted");
+                throw new Exception("文件夹不存在");
             }
             return await SugarContext.Context.Updateable<Folders>()
                 .SetColumns(document => new Folders()
@@ -335,7 +335,7 @@ namespace showdoc_server.Reponsitory.Document
                 .FirstAsync();
             if (document == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
 
             return await SugarContext.Context.Updateable<Documents>()
@@ -360,7 +360,7 @@ namespace showdoc_server.Reponsitory.Document
                 .FirstAsync();
             if (folder == null)
             {
-                throw new Exception("folder has been deleted");
+                throw new Exception("文件夹不存在");
             }
             return await SugarContext.Context.Updateable<Folders>()
                 .SetColumns(document => new Folders()
@@ -384,7 +384,7 @@ namespace showdoc_server.Reponsitory.Document
             var historyDocument = await query.Select((historyDocument, document, project, projectUser) => historyDocument).FirstAsync();
             if (document == null || historyDocument == null)
             {
-                throw new Exception("history or document has been deleted");
+                throw new Exception("文档不存在");
             }
             // 将该版本及之后的历史删掉
             await SugarContext.Context.Deleteable<HistoryDocuments>()
@@ -414,7 +414,7 @@ namespace showdoc_server.Reponsitory.Document
                 .FirstAsync();
             if (document == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
 
             // 添加历史的前提是两次变更的内容对比不一样

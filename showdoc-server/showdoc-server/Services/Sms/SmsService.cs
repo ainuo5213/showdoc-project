@@ -28,6 +28,10 @@ namespace showdoc_server.Services.Sms
 
         public async Task<bool> SendSmsCode(string prefix, string cellphone)
         {
+            if (await this.smsReponsitory.Count(cellphone) >= 5)
+            {
+                throw new Exception("you send verify code more than 5 times");
+            }
             string key = this.redisService.Key(prefix, cellphone);
             if (!string.IsNullOrEmpty(this.redisService.Get(key)))
             {

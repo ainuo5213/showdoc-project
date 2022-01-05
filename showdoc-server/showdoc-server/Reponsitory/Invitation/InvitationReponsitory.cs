@@ -43,14 +43,14 @@ namespace showdoc_server.Reponsitory.Invitation
         {
             if (acceptStatus == InvitationCheckStatuses.Checking)
             {
-                throw new Exception("invation status invalid");
+                throw new Exception("非法邀请状态");
             }
 
             ProjectInvitations invitation = await SugarContext.Context.Queryable<ProjectInvitations>()
                 .FirstAsync(projectInvitation => projectInvitation.ProjectInvitationID == invitationID && projectInvitation.CheckUserID == userID && projectInvitation.Status == InvitationCheckStatuses.Checking);
             if (invitation == null)
             {
-                throw new Exception("no available invitation");
+                throw new Exception("邀请函不存在");
             }
 
             await SugarContext.Context.Updateable<ProjectInvitations>()
@@ -84,7 +84,7 @@ namespace showdoc_server.Reponsitory.Invitation
                 .FirstAsync(project => project.ProjectID == projectID && project.DeleteStatus == DeleteStatuses.UnDelete);
             if (project == null)
             {
-                throw new Exception("project has been deleted");
+                throw new Exception("项目不存在");
             }
 
             // 加入某个项目只有没有申请加入过或加入拒绝状态或已申请过但人已经离开了项目才允许加入
@@ -99,14 +99,14 @@ namespace showdoc_server.Reponsitory.Invitation
             // 如果已经加入了项目，则不允许再邀请
             if (joinedProject)
             {
-                throw new Exception("user has joined project");
+                throw new Exception("用户已加入先通过母");
             }
 
             // 没有加入项目，而且已经邀请了的话，但邀请未处理，则不允许再邀请一次
             // TODO：搜索加入项目和人的时候需要将邀请列表中未处理的邀请函的项目和审核人除外
             if (!joinedProject && invitedTo)
             {
-                throw new Exception("cannot invite user before apply checked");
+                throw new Exception("已申请加入项目");
             }
 
             return await SugarContext.Context.Insertable(new ProjectInvitations()
@@ -128,7 +128,7 @@ namespace showdoc_server.Reponsitory.Invitation
                 .FirstAsync(project => project.ProjectID == projectID && project.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete);
             if (project == null)
             {
-                throw new Exception("project has been deleted");
+                throw new Exception("项目不存在");
             }
 
             // 加入某个项目只有没有申请加入过或加入拒绝状态或已申请过但人已经离开了项目才允许加入
@@ -143,14 +143,14 @@ namespace showdoc_server.Reponsitory.Invitation
             // 如果已经加入了项目，则不允许再邀请
             if (joinedProject)
             {
-                throw new Exception("user has joined project");
+                throw new Exception("用户已加入");
             }
 
             // 没有加入项目，而且已经邀请了的话，但邀请未处理，则不允许再邀请一次
             // TODO：搜索加入项目和人的时候需要将邀请列表中未处理的邀请函的项目和审核人除外
             if (!joinedProject && invitedTo)
             {
-                throw new Exception("cannot invite user before apply checked");
+                throw new Exception("用户已申请");
             }
 
             return await SugarContext.Context.Insertable(new ProjectInvitations()

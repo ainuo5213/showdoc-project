@@ -18,7 +18,7 @@ namespace showdoc_server.Reponsitory.Project
             bool isMine = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.FolderID);
             if (entity.FolderID != 0 && !isMine)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
             Folders insertEntity = await SugarContext.Context.Insertable(new Folders()
             {
@@ -37,7 +37,7 @@ namespace showdoc_server.Reponsitory.Project
                 CreateTime = insertEntity.CreateTime,
                 Name = insertEntity.Name,
                 ObjectID = insertEntity.FolderID,
-                ParentId = insertEntity.ParentID,
+                ParentID = insertEntity.ParentID,
                 SortTime = insertEntity.SortTime,
                 Type = ProjectListItemTypes.Folder,
                 UserID = insertEntity.CreatorID,
@@ -50,7 +50,7 @@ namespace showdoc_server.Reponsitory.Project
             bool isMine = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.FolderID);
             if (entity.FolderID != 0 && !isMine)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
 
             // 插入项目（项目不具有文件夹，每个人都可以为项目分配文件夹）
@@ -91,7 +91,7 @@ namespace showdoc_server.Reponsitory.Project
                 CreateTime = insertEntity.CreateTime,
                 Name = insertEntity.Name,
                 ObjectID = insertEntity.ProjectID,
-                ParentId = entity.FolderID,
+                ParentID = entity.FolderID,
                 SortTime = insertEntity1.SortTime,
                 Type = ProjectListItemTypes.Project,
                 UserID = v,
@@ -104,7 +104,7 @@ namespace showdoc_server.Reponsitory.Project
             bool isMine = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder);
             if (!isMine)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
 
             // 所删除文件夹的子文件夹
@@ -123,7 +123,7 @@ namespace showdoc_server.Reponsitory.Project
             bool hasChildProjects = projectQuaryable.Count() > 0;
             if (hasChildFolders || hasChildProjects)
             {
-                throw new Exception("folder is using. if you want to delete the folder, please delete the children at first");
+                throw new Exception("文件夹正在使用");
             }
 
             return await SugarContext.Context.Updateable<Folders>()
@@ -172,7 +172,7 @@ namespace showdoc_server.Reponsitory.Project
                     CreateTime = project.CreateTime,
                     Name = project.Name,
                     ObjectID = project.ProjectID,
-                    ParentId = projectFolder.FolderID,
+                    ParentID = projectFolder.FolderID,
                     SortTime = projectUser.SortTime,
                     Type = ProjectListItemTypes.Project,
                 })
@@ -186,7 +186,7 @@ namespace showdoc_server.Reponsitory.Project
                     SortTime = folder.SortTime,
                     Name = folder.Name,
                     ObjectID = folder.FolderID,
-                    ParentId = folder.ParentID,
+                    ParentID = folder.ParentID,
                     UserID = folder.CreatorID,
                     Type = ProjectListItemTypes.Folder,
                 })
@@ -199,7 +199,7 @@ namespace showdoc_server.Reponsitory.Project
         {
             if (entity.FolderID == entity.ObjectID)
             {
-                throw new Exception("cannot move itself loop");
+                throw new Exception("移动文件非法");
             }
 
             Expression<Func<Folders, bool>> condition = r => r.CreatorID == v && r.FolderID == entity.ObjectID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder;
@@ -207,7 +207,7 @@ namespace showdoc_server.Reponsitory.Project
             bool isMineofTargetFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.FolderID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder);
             if ((!isMineofCurrentFolder || !isMineofTargetFolder) && entity.FolderID != 0)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
             return await SugarContext.Context.Updateable<Folders>().SetColumns(r => new Folders()
             {
@@ -225,7 +225,7 @@ namespace showdoc_server.Reponsitory.Project
             bool isMineFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(r => r.CreatorID == v && r.FolderID == entity.FolderID && r.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && r.Type == Dtos.Request.Folder.FolderTypes.ProjectFolder);
             if ((!isMineProject || !isMineFolder) && entity.FolderID != 0)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
             return await SugarContext.Context.Updateable<ProjectFolders>().SetColumns(r => new ProjectFolders()
             {
@@ -240,7 +240,7 @@ namespace showdoc_server.Reponsitory.Project
             bool isMineFolder = await SugarContext.Context.Queryable<Folders>().AnyAsync(condition);
             if (!isMineFolder)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
             return await SugarContext.Context.Updateable<Folders>().SetColumns(r => new Folders()
             {
@@ -255,7 +255,7 @@ namespace showdoc_server.Reponsitory.Project
             bool isMineProject = await SugarContext.Context.Queryable<Projects>().AnyAsync(condition);
             if (!isMineProject)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
             return await SugarContext.Context.Updateable<Projects>().SetColumns(r => new Projects()
             {

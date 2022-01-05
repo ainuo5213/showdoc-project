@@ -26,7 +26,7 @@ namespace showdoc_server.Controllers
         {
             if (entity.Type != SmsTypes.ForgetPassword && entity.Type != SmsTypes.Register)
             {
-                throw new ArgumentException("type is not supported");
+                throw new ArgumentException("短信类型不被支持");
             }
             bool isSuccess = await this.smsService.SendSmsCode(entity.Type.ToString(), entity.Cellphone);
             return await this.SuccessAsync(isSuccess);
@@ -38,7 +38,7 @@ namespace showdoc_server.Controllers
             string key = redisService.Key(SmsTypes.Register.ToString(), entity.Cellphone);
             if (string.IsNullOrEmpty(redisService.Get(key)) || redisService.Get(key) != entity.VerifyCode)
             {
-                throw new ArgumentException("verify code is not valid");
+                throw new ArgumentException("验证码不正确");
             }
             entity.Password = MD5Hash.Hash.Content(entity.Password);
             bool isSuccess = await this.userService.Register(entity);
@@ -58,7 +58,7 @@ namespace showdoc_server.Controllers
             string key = redisService.Key(SmsTypes.ForgetPassword.ToString(), entity.Cellphone);
             if (string.IsNullOrEmpty(redisService.Get(key)) || redisService.Get(key) != entity.VerifyCode)
             {
-                throw new ArgumentException("verify code is not valid");
+                throw new ArgumentException("验证码不正确");
             }
             entity.Password = MD5Hash.Hash.Content(entity.Password);
             bool isSuccess = await this.userService.PassForget(entity);

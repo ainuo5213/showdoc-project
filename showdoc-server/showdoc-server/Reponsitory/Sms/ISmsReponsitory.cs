@@ -8,5 +8,6 @@ namespace showdoc_server.Reponsitory.Sms
     public interface ISmsReponsitory
     {
         Task<int> AddSms(Dtos.Table.Sms entity);
+        Task<int> Count(string cellphone);
     }
 }

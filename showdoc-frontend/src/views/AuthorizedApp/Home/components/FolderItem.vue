@@ -1,5 +1,9 @@
 <template>
-  <div class="item-container" @dblclick="ondbClick" @contextmenu.stop.prevent="onProjectContextMenu">
+  <div
+    class="item-container"
+    @dblclick="ondbClick"
+    @contextmenu.stop.prevent="onProjectContextMenu"
+  >
     <el-card
       shadow="hover"
       :class="{
@@ -31,9 +35,14 @@
 <script lang="ts">
 import { IProjectItem, ProjectItemEnums } from "@/types/project";
 import { defineComponent, PropType, reactive } from "vue-demi";
-import { openContextMenuWithEntity, closeContextMenu, clearClipboard } from "@/hooks/contextmenu";
+import {
+  openContextMenuWithEntity,
+  closeContextMenu,
+  clearClipboard,
+} from "@/hooks/contextmenu";
 import { useEntitySelection } from "@/hooks/useFunction";
 import { useRouter } from "vue-router";
+import { pushFolder } from "@/hooks/folder";
 
 export default defineComponent({
   name: "Folder",
@@ -56,13 +65,19 @@ export default defineComponent({
     const ondbClick = () => {
       closeContextMenu();
       clearClipboard();
-      router.push({ name: "home", query: { projectID: props.data.objectID } });
-    }
+      // set folders
+      pushFolder({
+        folderID: props.data.objectID,
+        name: props.data.name,
+        parentID: props.data.parentID,
+      });
+      router.push({ name: "home", query: { folderID: props.data.objectID } });
+    };
     return {
       onProjectContextMenu,
       state,
       isSelected,
-      ondbClick
+      ondbClick,
     };
   },
 });

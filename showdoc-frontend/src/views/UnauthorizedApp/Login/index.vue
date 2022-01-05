@@ -86,6 +86,11 @@ export default defineComponent({
           message: "登陆成功",
         });
         router.push({ name: "home" });
+      } else {
+        ElMessage({
+          type: "error",
+          message: res.errmsg,
+        });
       }
     };
     return {
