@@ -67,9 +67,16 @@ export const copyToClipBard = (mode: EntityMode) => {
 };
 
 // 清理剪切板的数据
-export const clearClipboard = () => {
-  data.clipBoard.clipBoardEntity = undefined;
-  data.clipBoard.mode = EntityMode.None;
+export const clearClipboard = (objectID?: number) => {
+  console.log(objectID == undefined ||
+    (objectID > 0 && data.clipBoard.clipBoardEntity?.objectID == objectID));
+  if (
+    objectID == undefined ||
+    (objectID > 0 && data.clipBoard.clipBoardEntity?.objectID == objectID)
+  ) {
+    data.clipBoard.clipBoardEntity = undefined;
+    data.clipBoard.mode = EntityMode.None;
+  }
 };
 
 // 清除左键有右键选中的实体的数据

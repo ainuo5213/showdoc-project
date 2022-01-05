@@ -32,3 +32,14 @@ export interface IContextMenuData {
   entity: IProjectItem;
   clipBoard: IClipBoard;
 }
+
+export interface ICreateEntityForm {
+  folderID: number;
+  type: ProjectItemEnums;
+  name: string;
+}
+
+export interface IDeleteEntityForm {
+  objectID: number;
+  type: ProjectItemEnums;
+}

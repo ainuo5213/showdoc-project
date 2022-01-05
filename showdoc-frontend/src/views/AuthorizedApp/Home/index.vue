@@ -1,7 +1,12 @@
 <template>
   <search @search="onSearch"></search>
-  <div class="nav" v-if="folders.length">
-    <el-link :underline="false" v-if="folders.length" @click="clickFolder(0)"
+  <div class="nav">
+    <el-link
+      :class="{
+        active: 0 == activeFodlerID,
+      }"
+      :underline="false"
+      @click="clickFolder(0)"
       >root<span class="sep">/</span></el-link
     >
     <el-link
@@ -10,18 +15,18 @@
       :key="folder.folderID"
       @click="clickFolder(folder.folderID)"
       :class="{
-        active: folder.folderID == folders[folders.length - 1].folderID,
+        active: folder.folderID == activeFodlerID,
       }"
       >{{ folder.name }}<span class="sep">/</span></el-link
     >
   </div>
-  <home-list :data="data"></home-list>
+  <home-list :data="filteredData"></home-list>
   <context-menu v-if="contextmenuData.showContextMenu.value"></context-menu>
 </template>
 
 <script lang="ts">
 import ContextMenu from "@/components/contextmenu/index.vue";
-import { computed, defineComponent, reactive, toRefs, watch } from "vue-demi";
+import { computed, defineComponent, watch, ref } from "vue-demi";
 import HomeList from "./components/HomeList.vue";
 import Search from "./components/Search.vue";
 import { IProjectItem } from "@/types/project";
@@ -29,6 +34,7 @@ import { default as contextmenuData } from "@/hooks/contextmenu";
 import { useRequest } from "@/hooks/useFunction";
 import { useRoute, useRouter } from "vue-router";
 import { default as folderData, removeChildFolders } from "@/hooks/folder";
+import { default as state, setData } from "@/hooks/project";
 
 export default defineComponent({
   components: {
@@ -40,10 +46,8 @@ export default defineComponent({
     const { loading, request } = useRequest<IProjectItem[]>();
     const route = useRoute();
     const router = useRouter();
-    let sourceData: IProjectItem[];
-    const state = reactive({
-      data: [] as IProjectItem[],
-    });
+    const searchValue = ref("");
+    const activeFodlerID = computed(() => +(route.query.folderID || 0));
 
     const folderID = computed(() => {
       return route.query["folderID"] || 0;
@@ -59,8 +63,7 @@ export default defineComponent({
         },
       });
       if (res.errno == 0) {
-        sourceData = res.data;
-        state.data = sourceData;
+        setData(res.data);
       }
     }
 
@@ -75,19 +78,25 @@ export default defineComponent({
       }
     );
 
-    // search
-    const onSearch = (searchValue: string) => {
-      if (searchValue.length == 0) {
-        state.data = sourceData;
+    const filteredData = computed(() => {
+      if (searchValue.value.length == 0) {
+        return state.data.value;
       } else {
-        state.data = sourceData.filter((r) => r.name.indexOf(searchValue) >= 0);
+        return state.data.value.filter(
+          (r) => r.name.indexOf(searchValue.value) >= 0
+        );
       }
+    });
+
+    // search
+    const onSearch = (value: string) => {
+      searchValue.value = value;
     };
 
     // 改变网站名字
     watch(
       folderData.folders,
-      (value, newValue) => {
+      (value) => {
         const last = value[value.length - 1];
         if (last && last.name) {
           console.log("我的项目" + "~" + last.name);
@@ -104,7 +113,6 @@ export default defineComponent({
 
     // 面包屑导航
     function clickFolder(folderID: number) {
-      console.log(folderID);
       // 将之后的移除
       removeChildFolders(folderID);
       // 跳转
@@ -113,11 +121,12 @@ export default defineComponent({
 
     return {
       onSearch,
-      ...toRefs(state),
       contextmenuData,
       loading,
       folders: folderData.folders,
+      filteredData,
       clickFolder,
+      activeFodlerID,
     };
   },
 });

@@ -40,10 +40,40 @@
       </ul>
     </div>
   </teleport>
+
+  <el-dialog
+    v-model="state.showNewEntityDialog"
+    :title="'新建' + newEntityDialogTitle"
+    append-to-body
+    @close="cancelCreate"
+    width="20%"
+    custom-class="new-entity-dialog"
+  >
+    <el-form
+      :rules="state.rules"
+      :model="state.form"
+      ref="formRef"
+      destroy-on-close
+      :close-on-click-modal="false"
+      status-icon
+    >
+      <el-form-item prop="name">
+        <el-input maxlength="18" v-model="state.form.name"> </el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="cancelCreate">取消</el-button>
+        <el-button type="primary" @click="createProjectOrFolder"
+          >创建</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue-demi";
+import { computed, defineComponent, ref, reactive } from "vue-demi";
 import { ElMessageBox, ElMessage } from "element-plus";
 import {
   default as contextmenuData,
@@ -58,12 +88,33 @@ import {
   default as folders,
   removeChildFolders,
 } from "@/hooks/folder";
+import {
+  createFolderOrProject as createFolderOrProjectRequest,
+  deleteFolderOrProject,
+} from "@/api/project";
+import { appendData, removeData } from "@/hooks/project";
 
 export default defineComponent({
   name: "ContextMenu",
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const formRef = ref();
+    const state = reactive({
+      form: {
+        name: "",
+      },
+      rules: {
+        name: [
+          { required: true, message: `请输入名字` },
+          { min: 1, max: 18, message: `名字需在1到18个字符` },
+        ],
+      },
+      show: true,
+      showNewEntityDialog: false,
+      entityType: ProjectItemEnums.None,
+    });
+
     const positioRef = computed(() => {
       if (contextmenuData.contextmenuEvent?.value) {
         return {
@@ -83,47 +134,73 @@ export default defineComponent({
     const showEntityOperation = computed(() => {
       return contextmenuData.entity?.value.objectID > 0;
     });
+    const newEntityDialogTitle = computed(() => {
+      return state.entityType == ProjectItemEnums.Project ? "项目" : "文件夹";
+    });
     const showCutOperation = computed(() => {
       return contextmenuData.entity?.value.objectID > 0;
     });
     const hasClipboardEntity = computed(() => {
       return contextmenuData.clipBoard.value.clipBoardEntity != null;
     });
-    const onDelete = (e: MouseEvent) => {
-      ElMessageBox.confirm("删除的数据无法恢复，请问您要删除吗？", {
-        confirmButtonText: "直接删除",
-        cancelButtonText: "考虑一下",
-        type: "error",
-      })
-        .then((data) => {
-          ElMessage({
-            type: "success",
-            message: "删除成功",
-          });
-          // TODO: delete api
+    const onDelete = () => {
+      if (
+        contextmenuData.entity.value.type != ProjectItemEnums.Space &&
+        contextmenuData.entity.value.type != ProjectItemEnums.None
+      ) {
+        ElMessageBox.confirm("删除的数据无法恢复，请问您要删除吗？", {
+          confirmButtonText: "直接删除",
+          cancelButtonText: "考虑一下",
+          type: "error",
         })
-        .finally(() => {
-          closeContextMenu();
-        });
+          .then(async (data) => {
+            let res = await deleteFolderOrProject({
+              type: contextmenuData.entity.value.type,
+              objectID: contextmenuData.entity.value.objectID,
+            });
+            if (res.errno == 0 && res.data) {
+              ElMessage({
+                type: "success",
+                message: "删除成功",
+              });
+              removeData(contextmenuData.entity.value.objectID);
+              clearClipboard(contextmenuData.entity.value.objectID);
+            } else {
+              ElMessage({
+                type: "error",
+                message: "删除失败",
+              });
+            }
+          })
+          .finally(() => {
+            closeContextMenu();
+          });
+      }
     };
-    const onNewProject = (e: MouseEvent) => {
-      console.log(e);
+    const onNewProject = () => {
+      if (contextmenuData.contxtMenuType.value == ProjectItemEnums.Space) {
+        state.showNewEntityDialog = true;
+        state.entityType = ProjectItemEnums.Project;
+      }
     };
-    const onNewFolder = (e: MouseEvent) => {
-      console.log(e);
+    const onNewFolder = () => {
+      if (contextmenuData.contxtMenuType.value == ProjectItemEnums.Space) {
+        state.showNewEntityDialog = true;
+        state.entityType = ProjectItemEnums.Folder;
+      }
     };
     const onRename = (e: MouseEvent) => {
       console.log(e);
     };
-    const onCut = (e: MouseEvent) => {
+    const onCut = () => {
       copyToClipBard(EntityMode.Cut);
       closeContextMenu();
     };
-    const onCopy = (e: MouseEvent) => {
+    const onCopy = () => {
       copyToClipBard(EntityMode.Copy);
       closeContextMenu();
     };
-    const onView = (e: MouseEvent) => {
+    const onView = () => {
       if (contextmenuData.entity.value.type == ProjectItemEnums.Folder) {
         // router跳转
         router.replace({
@@ -139,7 +216,7 @@ export default defineComponent({
       }
       closeContextMenu();
     };
-    const onReturn = (e: MouseEvent) => {
+    const onReturn = () => {
       // router跳转：判断是否是点击空白区域，且folder历史存在
       if (
         folders.folders.value.length &&
@@ -154,12 +231,49 @@ export default defineComponent({
       }
       closeContextMenu();
     };
-    const onPaste = (e: MouseEvent) => {
+    const onPaste = () => {
       if (contextmenuData.clipBoard.value != null) {
         // TODO: paste api
       }
       clearClipboard();
       closeContextMenu();
+    };
+    const cancelCreate = () => {
+      state.showNewEntityDialog = false;
+      state.entityType = ProjectItemEnums.None;
+      closeContextMenu();
+    };
+    const createProjectOrFolder = async () => {
+      if (state.form.name.length == 0) {
+        return;
+      }
+      try {
+        let res = await createFolderOrProjectRequest({
+          name: state.form.name,
+          type: state.entityType,
+          folderID: +(route.query.folderID || 0),
+        });
+        if (res.errno == 0 && res.data != null) {
+          ElMessage({
+            type: "success",
+            message: `创建${newEntityDialogTitle.value}成功`,
+          });
+          appendData(res.data);
+        } else {
+          ElMessage({
+            type: "error",
+            message: `创建${newEntityDialogTitle.value}失败`,
+          });
+        }
+      } catch {
+        // do nothing
+        ElMessage({
+          type: "error",
+          message: "出了一点问题",
+        });
+      } finally {
+        cancelCreate();
+      }
     };
     const showRetunOperation = computed(() => {
       return folders.folders.value.length > 0;
@@ -181,6 +295,11 @@ export default defineComponent({
       hasClipboardEntity,
       showCutOperation,
       showRetunOperation,
+      createProjectOrFolder,
+      cancelCreate,
+      formRef,
+      newEntityDialogTitle,
+      state,
     };
   },
 });
@@ -213,5 +332,9 @@ export default defineComponent({
       }
     }
   }
+}
+
+::v-deep(.new-entity-dialog) {
+  width: 360px !important;
 }
 </style>

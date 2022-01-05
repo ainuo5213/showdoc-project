@@ -64,7 +64,6 @@ export default defineComponent({
     };
     const ondbClick = () => {
       closeContextMenu();
-      clearClipboard();
       // set folders
       pushFolder({
         folderID: props.data.objectID,
