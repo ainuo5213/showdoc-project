@@ -15,7 +15,7 @@ const instance = axios.create({
   timeout: 10000,
 });
 instance.interceptors.request.use((config) => {
-  if (token) {
+  if (token.token.value.length > 0) {
     config.headers = {
       Authorization: `Bearer ${token.token.value}`,
       "Content-Type": "application/json; charset=utf-8",

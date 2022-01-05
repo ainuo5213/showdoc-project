@@ -16,6 +16,14 @@ export const routes = [
     },
   },
   {
+    path: "/resetPassword",
+    name: "resetPassword",
+    component: () => import("@/views/UnauthorizedApp/ResetPassword/index.vue"),
+    meta: {
+      title: "忘记密码",
+    },
+  },
+  {
     path: "/",
     redirect: "/home",
     name: "home",

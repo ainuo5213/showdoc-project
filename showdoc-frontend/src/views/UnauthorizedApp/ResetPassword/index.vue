@@ -1,20 +1,13 @@
 <template>
   <el-card class="card-center" shadow="always">
     <el-form :model="form" status-icon :rules="rules" ref="formRef">
-      <h2 class="header">注册</h2>
+      <h2 class="header">忘记密码</h2>
       <el-form-item prop="cellphone">
         <el-input
           placeholder="手机号"
           v-model="form.cellphone"
           maxlength="11"
           oninput="value = value.replace(/^\.+|[^\d.]/g, '')"
-        ></el-input>
-      </el-form-item>
-      <el-form-item prop="username">
-        <el-input
-          placeholder="用户名"
-          v-model="form.username"
-          maxlength="18"
         ></el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -37,65 +30,63 @@
         <div class="verify-group">
           <el-input v-model="form.verifyCode"></el-input>
           <el-button
-            :disabled="!showSendVerifyCodeBtn || sendVerifyBtnLoading"
             type="primary"
+            :disabled="!verifyCodeDisabled || verifyBtnLoading"
             @click.prevent="sendVerifyCode"
+            :loading="verifyBtnLoading"
           >
-            <span v-show="!sendVerifyBtnLoading">发送验证码</span>
-            <span v-show="sendVerifyBtnLoading">{{ delay }}s</span>
+            <span v-show="!verifyBtnLoading">发送验证码</span>
+            <span v-show="verifyBtnLoading">{{ delay }}s</span>
           </el-button>
         </div>
       </el-form-item>
       <el-form-item>
         <el-button
-          :disabled="submitFormDisabled"
           class="btn"
           type="primary"
           @click="submitForm"
-          :loading="loading"
-          >登录</el-button
+          :disabled="submitFormDisabled"
+          :loading="submitFormLoading"
+          >修改密码</el-button
         >
       </el-form-item>
       <el-form-item class="footer">
-        <router-link to="/login">登录</router-link>
-        &nbsp;&nbsp;&nbsp;
-        <router-link to="/resetPassword">忘记密码</router-link>
+        <router-link to="/login">想起密码了？去登录</router-link>
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from "vue-demi";
 import { useRequest } from "@/hooks/useFunction";
+import { defineComponent, reactive, ref, computed } from "vue-demi";
 import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  name: "Login",
+  name: "ResetPassword",
   setup() {
     const formRef = ref();
     const {
-      loading: sendVerifyBtnLoading,
-      request: sendVerifyRequest,
+      loading: verifyBtnLoading,
       delay,
+      request: sendVerifyCodeRequest,
     } = useRequest<boolean>(60);
+
     const { loading: submitFormLoading, request: submitFormRequest } =
       useRequest<boolean>();
+    const router = useRouter();
 
     const state = reactive({
       form: {
         cellphone: "",
         password: "",
-        username: "",
         confirmPassword: "",
         verifyCode: "",
       },
       rules: {
         cellphone: [
           { required: true, message: "请输入手机号", trigger: "blur" },
-        ],
-        username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
         ],
         password: [{ validator: validatePass, trigger: "blur" }],
         confirmPassword: [{ validator: validateConfirmPass, trigger: "blur" }],
@@ -124,16 +115,29 @@ export default defineComponent({
       }
     }
 
+    const verifyCodeDisabled = computed(() =>
+      /^[1][3,4,5,7,8][0-9]{9}$/.test(state.form.cellphone)
+    );
+
+    const submitFormDisabled = computed(() => {
+      return (
+        state.form.cellphone.length == 0 ||
+        state.form.password.length == 0 ||
+        state.form.confirmPassword.length == 0 ||
+        state.form.verifyCode.length == 0
+      );
+    });
+
     async function sendVerifyCode() {
       if (state.form.cellphone.length == 0) {
         return;
       }
-      const res = await sendVerifyRequest({
+      const res = await sendVerifyCodeRequest({
         url: "/api/auth/message",
         method: "post",
         data: {
           cellphone: state.form.cellphone,
-          type: 0,
+          type: 1,
         },
       });
       if (res.errno == 0 && res.data) {
@@ -148,23 +152,11 @@ export default defineComponent({
         });
       }
     }
-    const showSendVerifyCodeBtn = computed(() =>
-      /^[1][3,4,5,7,8][0-9]{9}$/.test(state.form.cellphone)
-    );
-    const submitFormDisabled = computed(
-      () =>
-        state.form.cellphone.length == 0 ||
-        state.form.password.length == 0 ||
-        state.form.confirmPassword.length == 0 ||
-        state.form.username.length == 0 ||
-        state.form.verifyCode.length == 0
-    );
     async function submitForm() {
       let res = await submitFormRequest({
-        url: "/api/auth/register",
+        url: "/api/auth/passforget",
         method: "post",
         data: {
-          username: state.form.username,
           password: state.form.password,
           cellphone: state.form.cellphone,
           verifyCode: state.form.verifyCode,
@@ -173,8 +165,9 @@ export default defineComponent({
       if (res.errno == 0 && res.data) {
         ElMessage({
           type: "success",
-          message: "注册成功",
+          message: "修改密码成功",
         });
+        router.push({ name: "login" });
       } else {
         ElMessage({
           type: "error",
@@ -186,13 +179,13 @@ export default defineComponent({
       form: state.form,
       rules: state.rules,
       formRef,
-      sendVerifyBtnLoading,
-      submitFormLoading,
       submitForm,
-      submitFormDisabled,
       sendVerifyCode,
+      verifyCodeDisabled,
+      verifyBtnLoading,
       delay,
-      showSendVerifyCodeBtn,
+      submitFormDisabled,
+      submitFormLoading,
     };
   },
 });

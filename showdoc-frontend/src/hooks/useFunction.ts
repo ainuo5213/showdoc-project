@@ -59,10 +59,13 @@ export function useRequest<T>(delay?: number) {
       res = await axios(config);
       showDelayRef.value = delay && delay > 0 && res.errno == 0 && res.data;
       if (showDelayRef.value) {
-        setInterval(() => {
+        const timerRef = ref();
+        timerRef.value = setInterval(() => {
           if (delayRef.value <= 0) {
             delayRef.value = 0;
             loadingRef.value = false;
+            setTimeout(() => (delayRef.value = delay || 0), 0);
+            clearInterval(timerRef.value);
           } else {
             delayRef.value = delayRef.value - 1;
           }

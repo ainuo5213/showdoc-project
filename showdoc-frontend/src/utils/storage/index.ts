@@ -18,5 +18,5 @@ export function getToken(): IToken {
 }
 
 export function setToken(token: IToken) {
-  localStorage.setItem(KEY, JSON.stringify(token));
+  // localStorage.setItem(KEY, JSON.stringify(token));
 }

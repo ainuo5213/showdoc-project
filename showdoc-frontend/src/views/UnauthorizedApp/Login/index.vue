@@ -44,6 +44,7 @@ import { setToken } from "@/hooks/token";
 import { ILoginResult } from "@/types/login";
 import { IDataResult } from "@/types/data";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "Login",
@@ -69,28 +70,23 @@ export default defineComponent({
       );
     });
     const submitForm = async () => {
-      formRef
-        .value!.validate((valid: boolean) => {
-          if (!valid) {
-            throw new Error("invalid");
-          }
-          return valid;
-        })
-        .then(async () => {
-          let res: IDataResult<ILoginResult> = await request({
-            url: "/api/auth/login",
-            method: "POST",
-            data: state.form,
-          });
-          if (res.errno == 0) {
-            setToken({
-              userID: res.data.userID,
-              token: res.data.token,
-              expires: res.data.expires,
-            });
-            router.push({ name: "home" });
-          }
+      let res: IDataResult<ILoginResult> = await request({
+        url: "/api/auth/login",
+        method: "POST",
+        data: state.form,
+      });
+      if (res.errno == 0) {
+        setToken({
+          userID: res.data.userID,
+          token: res.data.token,
+          expires: res.data.expires,
         });
+        ElMessage({
+          type: "success",
+          message: "登陆成功",
+        });
+        router.push({ name: "home" });
+      }
     };
     return {
       form: state.form,
