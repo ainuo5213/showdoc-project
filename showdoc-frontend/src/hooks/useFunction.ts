@@ -1,9 +1,20 @@
-import { customRef, computed, ref } from "vue";
+import { customRef, computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { EntityMode, IProjectItem } from "@/types/project";
-import { default as contextmenuData } from "@/hooks/contextmenu";
+import {
+  clearSelectedEntity,
+  copyToClipBardMouseLeft,
+  default as contextmenuData,
+} from "@/hooks/contextmenu";
 import axios from "@/utils/http";
 import { AxiosRequestConfig } from "axios";
 import { IDataResult } from "@/types/data";
+import { ElMessage } from "element-plus";
+import {
+  cancelRenaming,
+  default as projectState,
+  renameData,
+} from "@/hooks/project";
+import { renamFolderOrProject } from "@/api/project";
 
 export function useDebouncedRef(value: string, delay = 200) {
   let timeout: any;
@@ -88,5 +99,81 @@ export function useRequest<T>(delay?: number) {
     request,
     loading: loadingRef,
     delay: delayRef,
+  };
+}
+
+export function useShortCut(ref: { value: any }) {
+  onMounted(() => {
+    (ref.value as HTMLElement).addEventListener("keyup", onKeyUp);
+  });
+
+  onBeforeUnmount(() => {
+    (ref.value as HTMLElement).removeEventListener("keyup", onKeyUp);
+  });
+
+  async function onKeyUp(e: KeyboardEvent) {
+    // cut
+    if (e.ctrlKey && e.code == "KeyX") {
+      ElMessage({
+        type: "success",
+        message: "已加入剪切板",
+      });
+      copyToClipBardMouseLeft(EntityMode.Cut);
+      clearSelectedEntity();
+    }
+    // copy：暂时没有实现
+    else if (e.ctrlKey && e.code == "KeyC") {
+      console.log(111);
+    }
+  }
+
+  return {};
+}
+
+export function useRename(data: IProjectItem) {
+  const nameRef = ref("");
+  const isRenaming = computed(() => {
+    return (
+      projectState.namedEntity.value.objectID != 0 &&
+      projectState.namedEntity.value.objectID == data.objectID &&
+      projectState.namedEntity.value.type == data.type
+    );
+  });
+  const onRename = async (): Promise<void> => {
+    if (nameRef.value.length == 0) {
+      ElMessage({
+        type: "error",
+        message: "项目名长度必须大于1",
+      });
+      return;
+    }
+
+    if (nameRef.value == projectState.namedEntity.value.name) {
+      cancelRenaming();
+      return;
+    }
+    const res = await renamFolderOrProject({
+      objectID: projectState.namedEntity.value.objectID,
+      name: nameRef.value,
+      type: projectState.namedEntity.value.type,
+    });
+    if (res.errno == 0 && res.data) {
+      ElMessage({
+        type: "success",
+        message: "重命名成功",
+      });
+    } else {
+      ElMessage({
+        type: "error",
+        message: res.errmsg || "重命名失败",
+      });
+    }
+    renameData(nameRef.value);
+  };
+
+  return {
+    onRename,
+    name: nameRef,
+    isRenaming,
   };
 }
