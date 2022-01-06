@@ -6,6 +6,12 @@
     @click.stop.prevent="onclick"
     ref="folderRef"
     tabindex="0"
+    draggable="draggable"
+    @dragenter="$event.preventDefault()"
+    @dragover="$event.preventDefault()"
+    @dragleave="$event.preventDefault()"
+    @dragstart="onDrag"
+    @drop.stop.prevent="onDrop"
   >
     <el-card
       shadow="hover"
@@ -55,6 +61,10 @@ import {
 } from "@/hooks/useFunction";
 import { useRouter } from "vue-router";
 import { pushFolder } from "@/hooks/folder";
+import { default as dragState, setDragData } from "@/hooks/drag";
+import { moveFolderOrProject } from "@/api/project";
+import { ElMessage } from "element-plus";
+import { removeData } from "@/hooks/project";
 
 export default defineComponent({
   name: "Folder",
@@ -91,6 +101,32 @@ export default defineComponent({
       router.push({ name: "home", query: { folderID: props.data.objectID } });
     };
 
+    async function onDrop(e: MouseEvent) {
+      const data = dragState.dragData.value;
+      let res = await moveFolderOrProject({
+        folderID: props.data.objectID,
+        type: data.type,
+        objectID: data.objectID,
+      });
+      if (res.errno == 0 && res.data) {
+        ElMessage({
+          type: "success",
+          message: "移动实体成功",
+        });
+        removeData(data.objectID, data.type);
+      } else {
+        ElMessage({
+          type: "error",
+          message: res.errmsg,
+        });
+      }
+    }
+
+    function onDrag() {
+      console.log(props);
+      setDragData(props.data);
+    }
+
     const { name, onRename, isRenaming } = useRename(props.data);
 
     return {
@@ -102,6 +138,8 @@ export default defineComponent({
       onclick,
       folderRef,
       name,
+      onDrop,
+      onDrag,
     };
   },
 });

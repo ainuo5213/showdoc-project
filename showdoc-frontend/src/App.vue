@@ -9,6 +9,7 @@
 <script lang="ts">
 import { closeContextMenu, clearSelectedEntity } from "@/hooks/contextmenu";
 import { defineComponent, onBeforeMount, onMounted } from "vue-demi";
+import { removeDragData } from "./hooks/drag";
 
 export default defineComponent({
   setup() {
@@ -19,10 +20,14 @@ export default defineComponent({
     const onAppContextMenu = function (e: MouseEvent) {
       closeContextMenu();
     };
+    const onAppDrop = function () {
+      removeDragData();
+    }
     onMounted(async () => {
       const app = document.getElementById("app");
       app!.addEventListener("click", onAppClick);
       app!.addEventListener("contextmenu", onAppContextMenu);
+      app!.addEventListener("drop", onAppDrop);
     });
     onBeforeMount(() => {
       const app = document.getElementById("app");

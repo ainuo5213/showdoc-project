@@ -6,6 +6,10 @@
     @click.stop.prevent="onclick"
     ref="projectRef"
     tabindex="0"
+    @dragstart="onDrag"
+    @dragenter="$event.preventDefault()"
+    @dragover="$event.preventDefault()"
+    draggable="draggable"
   >
     <el-card
       :class="{
@@ -55,6 +59,7 @@ import {
   useShortCut,
 } from "@/hooks/useFunction";
 import { useRouter } from "vue-router";
+import { setDragData } from "@/hooks/drag"
 
 export default defineComponent({
   name: "Project",
@@ -90,6 +95,10 @@ export default defineComponent({
       setSelectEntity(props.data);
     };
 
+    function onDrag() {
+      setDragData(props.data);
+    }
+
     const { name, onRename, isRenaming } = useRename(props.data);
 
     return {
@@ -102,6 +111,7 @@ export default defineComponent({
       onclick,
       projectRef,
       name,
+      onDrag,
     };
   },
 });
