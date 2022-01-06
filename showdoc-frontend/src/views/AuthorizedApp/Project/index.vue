@@ -1,5 +1,5 @@
 <template>
-  <h1>project</h1>
+  <div class="project-container">project</div>
 </template>
 
 <script>
@@ -8,6 +8,9 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+/* .project-container {
+  position: relative;
+} */
 
 </style>

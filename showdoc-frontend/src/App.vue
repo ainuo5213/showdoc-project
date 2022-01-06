@@ -1,6 +1,6 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="app">
+    <transition name="app" mode="out-in">
       <component :is="Component" />
     </transition>
   </router-view>
@@ -44,5 +44,11 @@ export default defineComponent({
 .app-enter-to,
 .app-leave-from {
   opacity: 1;
+}
+.app-leave-to {
+  position: absolute;
+}
+.app-move {
+  transition: transform 0.5s ease;
 }
 </style>

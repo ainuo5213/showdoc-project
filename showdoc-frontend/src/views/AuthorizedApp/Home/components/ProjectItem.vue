@@ -1,5 +1,9 @@
 <template>
-  <div class="item-container" @dblclick="ondbClick" @contextmenu.stop.prevent="onProjectContextMenu">
+  <div
+    class="item-container"
+    @dblclick="ondbClick"
+    @contextmenu.stop.prevent="onProjectContextMenu"
+  >
     <el-card
       :class="{
         'entity-selected': isSelected,
@@ -17,11 +21,15 @@
         <img :src="require('@/assets/img/project.png')" />
       </div>
       <div class="title-container elipsis">
-        <span class="title" v-show="!state.renaming">{{ data.name }}</span>
+        <span v-if="!isRenaming" class="title">{{ data.name }}</span>
         <el-input
-          v-show="state.renaming"
+          v-else
           v-model="state.name"
           placeholder="请输入项目名"
+          @blur="onRename"
+          @keyup.enter="$event.target.blur()"
+          maxlength="18"
+          autofocus
         />
       </div>
     </el-card>
@@ -30,15 +38,22 @@
 
 <script lang="ts">
 import { IProjectItem, ProjectItemEnums } from "@/types/project";
-import { defineComponent, PropType, reactive } from "vue-demi";
+import { defineComponent, PropType, reactive, computed } from "vue-demi";
 import {
   openContextMenuWithEntity,
   closeContextMenu,
   clearClipboard,
   default as contextmenuData,
 } from "@/hooks/contextmenu";
+import { renamFolderOrProject } from "@/api/project";
 import { useEntitySelection } from "@/hooks/useFunction";
 import { useRouter } from "vue-router";
+import {
+  default as projectState,
+  renameData,
+  cancelRenaming,
+} from "@/hooks/project";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "Project",
@@ -62,7 +77,48 @@ export default defineComponent({
     const ondbClick = () => {
       closeContextMenu();
       clearClipboard();
-      router.push({ name: "project", query: { projectID: props.data.objectID } });
+      router.push({
+        name: "project",
+        query: { projectID: props.data.objectID },
+      });
+    };
+
+    const isRenaming = computed(() => {
+      return (
+        projectState.namedEntity.value.objectID != 0 &&
+        projectState.namedEntity.value.objectID == props.data.objectID &&
+        projectState.namedEntity.value.type == props.data.type
+      );
+    });
+    const onRename = async () => {
+      if (state.name.length == 0) {
+        ElMessage({
+          type: "error",
+          message: "项目名长度必须大于1",
+        });
+        return;
+      }
+      if (state.name == projectState.namedEntity.value.name) {
+        cancelRenaming();
+        return;
+      }
+      let res = await renamFolderOrProject({
+        objectID: projectState.namedEntity.value.objectID,
+        name: state.name,
+        type: projectState.namedEntity.value.type,
+      });
+      if (res.errno == 0 && res.data) {
+        ElMessage({
+          type: "success",
+          message: "重命名成功",
+        });
+      } else {
+        ElMessage({
+          type: "error",
+          message: res.errmsg || "重命名失败",
+        });
+      }
+      renameData(state.name);
     };
 
     return {
@@ -71,6 +127,8 @@ export default defineComponent({
       contextmenuData,
       isSelected,
       ondbClick,
+      isRenaming,
+      onRename,
     };
   },
 });

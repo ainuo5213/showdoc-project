@@ -32,7 +32,7 @@ import Search from "./components/Search.vue";
 import { IProjectItem } from "@/types/project";
 import { default as contextmenuData } from "@/hooks/contextmenu";
 import { useRequest } from "@/hooks/useFunction";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import { default as folderData, removeChildFolders } from "@/hooks/folder";
 import { default as state, setData } from "@/hooks/project";
 
@@ -110,6 +110,11 @@ export default defineComponent({
         deep: true,
       }
     );
+
+    onBeforeRouteUpdate((to, next) => {
+      const folderID = +(to.query.folderID || 0);
+      removeChildFolders(folderID);
+    })
 
     // 面包屑导航
     function clickFolder(folderID: number) {

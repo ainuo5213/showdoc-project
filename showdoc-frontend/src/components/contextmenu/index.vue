@@ -29,7 +29,8 @@
         <li v-show="showSpaceOperation" @click.stop.prevent="onNewProject">
           新建项目
         </li>
-        <li v-show="showEntityOperation" @click.stop.prevent="onCopy">复制</li>
+        <!-- 复制有点复杂之后再做 -->
+        <!-- <li v-show="showEntityOperation" @click.stop.prevent="onCopy">复制</li> -->
         <li v-show="showCutOperation" @click.stop.prevent="onCut">剪切</li>
         <li
           v-show="showSpaceOperation && hasClipboardEntity"
@@ -87,13 +88,19 @@ import {
   pushFolder,
   default as folders,
   removeChildFolders,
-  clearFolders
+  clearFolders,
 } from "@/hooks/folder";
 import {
   createFolderOrProject as createFolderOrProjectRequest,
   deleteFolderOrProject,
+  moveFolderOrProject,
 } from "@/api/project";
-import { appendData, removeData } from "@/hooks/project";
+import {
+  appendData,
+  removeData,
+  setRenamingData,
+  default as entities,
+} from "@/hooks/project";
 
 export default defineComponent({
   name: "ContextMenu",
@@ -164,7 +171,10 @@ export default defineComponent({
                 type: "success",
                 message: "删除成功",
               });
-              removeData(contextmenuData.entity.value.objectID);
+              removeData(
+                contextmenuData.entity.value.objectID,
+                contextmenuData.entity.value.type
+              );
               clearClipboard(contextmenuData.entity.value.objectID);
             } else {
               ElMessage({
@@ -191,7 +201,10 @@ export default defineComponent({
       }
     };
     const onRename = (e: MouseEvent) => {
-      console.log(e);
+      if (contextmenuData.entity.value != null) {
+        setRenamingData(contextmenuData.entity.value);
+      }
+      closeContextMenu();
     };
     const onCut = () => {
       copyToClipBard(EntityMode.Cut);
@@ -214,8 +227,8 @@ export default defineComponent({
           parentID: contextmenuData.entity.value.parentID,
           name: contextmenuData.entity.value.name,
         });
-      }else {
-         // router跳转
+      } else {
+        // router跳转
         router.replace({
           name: "project",
           query: { projectID: contextmenuData.entity.value.objectID },
@@ -239,9 +252,45 @@ export default defineComponent({
       }
       closeContextMenu();
     };
-    const onPaste = () => {
-      if (contextmenuData.clipBoard.value != null) {
-        // TODO: paste api
+    const onPaste = async () => {
+      if (
+        contextmenuData.clipBoard.value != null &&
+        contextmenuData.clipBoard.value.mode != undefined &&
+        contextmenuData.clipBoard.value.mode != EntityMode.None &&
+        contextmenuData.clipBoard.value.clipBoardEntity != null
+      ) {
+        const folderID = +(route.query.folderID || 0);
+        if (contextmenuData.clipBoard.value.mode == EntityMode.Cut) {
+          // 剪切，即移动
+          let res = await moveFolderOrProject({
+            objectID: contextmenuData.clipBoard.value.clipBoardEntity.objectID,
+            folderID: folderID,
+            type: contextmenuData.clipBoard.value.clipBoardEntity.type,
+          });
+          if (res.errno == 0 && res.data) {
+            ElMessage({
+              type: "success",
+              message: "移动实体成功",
+            });
+            const index = entities.data.value.findIndex(
+              (r) =>
+                r.objectID ==
+                  contextmenuData.clipBoard.value.clipBoardEntity!.objectID &&
+                r.type == contextmenuData.clipBoard.value.clipBoardEntity!.type
+            );
+            if (index < 0) {
+              appendData(contextmenuData.clipBoard.value.clipBoardEntity);
+            }
+          } else {
+            ElMessage({
+              type: "error",
+              message: res.errmsg,
+            });
+          }
+        } else {
+          // 复制
+          console.log("待完善复制");
+        }
       }
       clearClipboard();
       closeContextMenu();

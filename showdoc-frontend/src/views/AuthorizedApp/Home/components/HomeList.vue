@@ -1,6 +1,6 @@
 <template>
   <div class="homelist-container" @contextmenu.stop.prevent="onContextMenu">
-    <transition-group name="homelist" tag="ul" :appear="true">
+    <transition-group name="homelist" tag="ul" :appear="true" mode="out-in">
       <li
         v-for="item in data"
         :key="`${item.name}_${item.objectID}_${item.type}`"

@@ -43,3 +43,15 @@ export interface IDeleteEntityForm {
   objectID: number;
   type: ProjectItemEnums;
 }
+
+export interface IMoveEntityForm {
+  folderID: number;
+  type: ProjectItemEnums;
+  objectID: number;
+}
+
+export interface IRenamEntityForm {
+  name: string;
+  type: ProjectItemEnums;
+  objectID: number;
+}
