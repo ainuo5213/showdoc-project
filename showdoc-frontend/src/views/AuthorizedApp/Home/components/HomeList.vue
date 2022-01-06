@@ -2,7 +2,7 @@
   <div
     tabindex="0"
     ref="homeListRef"
-    class="homelist-container"
+    class="homelist-container scrollbar"
     @contextmenu.stop.prevent="onContextMenu"
   >
     <transition-group name="homelist" tag="ul" :appear="true" mode="out-in">
@@ -127,19 +127,6 @@ export default defineComponent({
   overflow-x: hidden;
   & > * {
     user-select: none;
-  }
-
-  &::-webkit-scrollbar-track {
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: #0003;
-    border-radius: 10px;
-    transition: all 0.2s ease-in-out;
-  }
-
-  &::-webkit-scrollbar {
-    width: 6px;
   }
 }
 ul {

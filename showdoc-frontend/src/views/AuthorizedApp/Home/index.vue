@@ -32,7 +32,7 @@
 import ContextMenu from "@/components/contextmenu/index.vue";
 import { computed, defineComponent, watch, ref } from "vue-demi";
 import HomeList from "./components/HomeList.vue";
-import Search from "./components/Search.vue";
+import Search from "@/components/Search/index.vue";
 import { IProjectItem } from "@/types/project";
 import { default as contextmenuData } from "@/hooks/contextmenu";
 import { useRequest } from "@/hooks/useFunction";
