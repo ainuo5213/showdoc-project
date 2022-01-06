@@ -1,6 +1,6 @@
 <template>
   <div class="homelist-container" @contextmenu.stop.prevent="onContextMenu">
-    <ul>
+    <transition-group name="homelist" tag="ul" :appear="true">
       <li
         v-for="item in data"
         :key="`${item.name}_${item.objectID}_${item.type}`"
@@ -12,7 +12,7 @@
           <project-item :data="item"></project-item>
         </template>
       </li>
-    </ul>
+    </transition-group>
   </div>
 </template>
 
@@ -64,6 +64,7 @@ export default defineComponent({
   margin-top: 20px;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   & > * {
     user-select: none;
   }
@@ -88,5 +89,23 @@ ul {
     float: left;
     margin-bottom: 30px;
   }
+}
+
+.homelist-enter-active,
+.homelist-leave-active {
+  transition: all 0.5s ease;
+}
+.homelist-enter-from,
+.homelist-leave-to {
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.homelist-leave-to {
+  position: absolute;
+}
+
+.homelist-move {
+  transition: transform 0.5s ease;
 }
 </style>

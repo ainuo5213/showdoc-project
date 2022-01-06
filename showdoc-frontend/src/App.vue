@@ -1,11 +1,14 @@
 <template>
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <transition name="app">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <script lang="ts">
 import { closeContextMenu } from "@/hooks/contextmenu";
 import { defineComponent, onBeforeMount, onMounted } from "vue-demi";
-
 
 export default defineComponent({
   setup() {
@@ -29,13 +32,17 @@ export default defineComponent({
 });
 </script>
 
-<style>
-#app {
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  padding: 20px;
-  box-sizing: border-box;
-  max-height: 100vh;
-  max-width: 100vw;
-  overflow: hidden;
+<style scoped lang="less">
+.app-enter-from,
+.app-leave-to {
+  opacity: 0;
+}
+.app-enter-active,
+.app-leave-active {
+  transition: all 0.5s;
+}
+.app-enter-to,
+.app-leave-from {
+  opacity: 1;
 }
 </style>

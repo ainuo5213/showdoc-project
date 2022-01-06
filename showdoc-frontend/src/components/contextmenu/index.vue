@@ -87,6 +87,7 @@ import {
   pushFolder,
   default as folders,
   removeChildFolders,
+  clearFolders
 } from "@/hooks/folder";
 import {
   createFolderOrProject as createFolderOrProjectRequest,
@@ -213,6 +214,13 @@ export default defineComponent({
           parentID: contextmenuData.entity.value.parentID,
           name: contextmenuData.entity.value.name,
         });
+      }else {
+         // router跳转
+        router.replace({
+          name: "project",
+          query: { projectID: contextmenuData.entity.value.objectID },
+        });
+        clearFolders();
       }
       closeContextMenu();
     };

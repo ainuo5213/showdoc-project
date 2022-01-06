@@ -52,3 +52,8 @@ export const removeChildFolders = (folderID: number): void => {
     source.folders.splice(index, 1);
   }
 };
+
+export const clearFolders = (): void => {
+  // 将其子元素删除
+  source.folders.length = 0;
+};
