@@ -31,6 +31,7 @@ export interface IContextMenuData {
   contxtMenuType: ProjectItemEnums;
   entity: IProjectItem;
   clipBoard: IClipBoard;
+  selectEntity: IProjectItem;
 }
 
 export interface ICreateEntityForm {

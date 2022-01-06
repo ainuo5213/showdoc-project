@@ -7,13 +7,14 @@
 </template>
 
 <script lang="ts">
-import { closeContextMenu } from "@/hooks/contextmenu";
+import { closeContextMenu, clearSelectedEntity } from "@/hooks/contextmenu";
 import { defineComponent, onBeforeMount, onMounted } from "vue-demi";
 
 export default defineComponent({
   setup() {
     const onAppClick = function (e: MouseEvent) {
       closeContextMenu();
+      clearSelectedEntity();
     };
     const onAppContextMenu = function (e: MouseEvent) {
       closeContextMenu();

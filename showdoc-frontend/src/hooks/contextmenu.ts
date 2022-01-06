@@ -16,6 +16,15 @@ const originData: IContextMenuData = {
     parentID: 0,
     type: ProjectItemEnums.None,
   },
+  selectEntity: {
+    userID: 0,
+    sortTime: "",
+    createTime: "",
+    name: "",
+    objectID: 0,
+    parentID: 0,
+    type: ProjectItemEnums.None,
+  },
   clipBoard: {
     mode: EntityMode.None,
     clipBoardEntity: undefined,
@@ -29,6 +38,11 @@ const state = toRefs(readonly(data));
 export default state;
 
 // 打开右键（含选中）
+export const setSelectEntity = (contextmenu: IProjectItem) => {
+  data.selectEntity = contextmenu;
+};
+
+// 打开右键（含选中）
 export const openContextMenuWithEntity = (
   contextmenu: IProjectItem,
   event?: MouseEvent,
@@ -36,6 +50,7 @@ export const openContextMenuWithEntity = (
   contxtMenuType?: ProjectItemEnums
 ) => {
   data.entity = contextmenu;
+  data.selectEntity = contextmenu;
   data.contextmenuEvent = event;
   data.showContextMenu = !!showContextMenu;
   data.contxtMenuType =
@@ -60,16 +75,20 @@ export const closeContextMenu = () => {
   clearSelection();
 };
 
-// 加入剪切板
+// 右键选中的实体加入剪切板
 export const copyToClipBard = (mode: EntityMode) => {
   data.clipBoard.clipBoardEntity = data.entity;
   data.clipBoard.mode = mode;
 };
 
+// 左键选中的实体加入剪切板
+export const copyToClipBardMouseLeft = (mode: EntityMode) => {
+  data.clipBoard.clipBoardEntity = data.selectEntity;
+  data.clipBoard.mode = mode;
+};
+
 // 清理剪切板的数据
 export const clearClipboard = (objectID?: number) => {
-  console.log(objectID == undefined ||
-    (objectID > 0 && data.clipBoard.clipBoardEntity?.objectID == objectID));
   if (
     objectID == undefined ||
     (objectID > 0 && data.clipBoard.clipBoardEntity?.objectID == objectID)
@@ -79,9 +98,22 @@ export const clearClipboard = (objectID?: number) => {
   }
 };
 
-// 清除左键有右键选中的实体的数据
+// 清除右键选中的实体的数据
 export const clearSelection = () => {
   data.entity = {
+    userID: 0,
+    sortTime: "",
+    createTime: "",
+    name: "",
+    objectID: 0,
+    parentID: 0,
+    type: ProjectItemEnums.None,
+  };
+};
+
+// 清除左键选中的实体的数据
+export const clearSelectedEntity = () => {
+  data.selectEntity = {
     userID: 0,
     sortTime: "",
     createTime: "",

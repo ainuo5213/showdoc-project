@@ -3,6 +3,9 @@
     class="item-container"
     @dblclick="ondbClick"
     @contextmenu.stop.prevent="onProjectContextMenu"
+    @click.stop.prevent="onclick"
+    ref="folderRef"
+    tabindex="0"
   >
     <el-card
       shadow="hover"
@@ -37,14 +40,26 @@
 </template>
 
 <script lang="ts">
-import { IProjectItem, ProjectItemEnums } from "@/types/project";
-import { computed, defineComponent, PropType, reactive } from "vue-demi";
+import { EntityMode, IProjectItem, ProjectItemEnums } from "@/types/project";
+import {
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  PropType,
+  reactive,
+  ref,
+  onMounted,
+} from "vue-demi";
 import {
   openContextMenuWithEntity,
   closeContextMenu,
+  setSelectEntity,
+  default as contextmenuData,
+  clearSelectedEntity,
+  copyToClipBardMouseLeft,
 } from "@/hooks/contextmenu";
 import { useEntitySelection } from "@/hooks/useFunction";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { pushFolder } from "@/hooks/folder";
 import {
   default as projectState,
@@ -63,14 +78,31 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const folderRef = ref();
     const router = useRouter();
     const { isSelected } = useEntitySelection(props.data);
     const state = reactive({
       name: props.data.name,
     });
     const onProjectContextMenu = (e: MouseEvent) => {
-      openContextMenuWithEntity(props.data, e, true, ProjectItemEnums.Project);
+      openContextMenuWithEntity(props.data, e, true, ProjectItemEnums.Folder);
     };
+
+    // 设置选中状态
+    const onclick = (e: MouseEvent) => {
+      if (contextmenuData.showContextMenu) {
+        closeContextMenu();
+      }
+      setSelectEntity(props.data);
+    };
+
+    onMounted(() => {
+      (folderRef.value as HTMLElement).addEventListener("keyup", onKeyUp);
+    });
+
+    onBeforeUnmount(() => {
+      (folderRef.value as HTMLElement).removeEventListener("keyup", onKeyUp);
+    });
     const ondbClick = () => {
       closeContextMenu();
       // set folders
@@ -119,6 +151,22 @@ export default defineComponent({
       }
       renameData(state.name);
     };
+
+    async function onKeyUp(e: KeyboardEvent) {
+      // cut
+      if (e.ctrlKey && e.code == "KeyX") {
+        copyToClipBardMouseLeft(EntityMode.Cut);
+        clearSelectedEntity();
+        ElMessage({
+          type: "success",
+          message: "已加入剪切板",
+        });
+      }
+      // copy：暂时没有实现
+      else if (e.ctrlKey && e.code == "KeyC") {
+        console.log(111);
+      }
+    }
     return {
       onProjectContextMenu,
       state,
@@ -126,6 +174,8 @@ export default defineComponent({
       ondbClick,
       isRenaming,
       onRename,
+      onclick,
+      folderRef,
     };
   },
 });

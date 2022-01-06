@@ -26,7 +26,12 @@ export function useDebouncedRef(value: string, delay = 200) {
 
 export function useEntitySelection(data: IProjectItem) {
   const isSelectedRef = computed(() => {
-    // 选中实体
+    // 左键选中的实体
+    const selectedEntity =
+      contextmenuData.selectEntity.value.objectID == data.objectID &&
+      contextmenuData.selectEntity.value.type == data.type;
+
+    // 右键选中的实体
     const contextEntitySelected =
       contextmenuData.entity?.value?.objectID == data.objectID &&
       contextmenuData.entity?.value?.type == data.type;
@@ -38,7 +43,7 @@ export function useEntitySelection(data: IProjectItem) {
       contextmenuData.clipBoard.value.clipBoardEntity.objectID ==
         data.objectID &&
       contextmenuData.clipBoard?.value?.clipBoardEntity.type == data.type;
-    return contextEntitySelected || contextEntityClipboard;
+    return contextEntitySelected || contextEntityClipboard || selectedEntity;
   });
 
   return {

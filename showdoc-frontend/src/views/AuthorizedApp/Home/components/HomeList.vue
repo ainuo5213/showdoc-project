@@ -1,15 +1,20 @@
 <template>
-  <div class="homelist-container" @contextmenu.stop.prevent="onContextMenu">
+  <div
+    tabindex="0"
+    ref="homeListRef"
+    class="homelist-container"
+    @contextmenu.stop.prevent="onContextMenu"
+  >
     <transition-group name="homelist" tag="ul" :appear="true" mode="out-in">
       <li
         v-for="item in data"
         :key="`${item.name}_${item.objectID}_${item.type}`"
       >
         <template v-if="item.type === folderEnum">
-          <folder-item :data="item"></folder-item>
+          <folder-item :data="item" :key="`${item.name}_${item.objectID}_${item.type}`"></folder-item>
         </template>
         <template v-else>
-          <project-item :data="item"></project-item>
+          <project-item :data="item" :key="`${item.name}_${item.objectID}_${item.type}`"></project-item>
         </template>
       </li>
     </transition-group>
@@ -17,11 +22,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue-demi";
+import { defineComponent, onBeforeUnmount, onMounted, PropType, ref } from "vue-demi";
 import FolderItem from "./FolderItem.vue";
 import ProjectItem from "./ProjectItem.vue";
-import { IProjectItem, ProjectItemEnums } from "@/types/project";
-import { openContextMenuWithEntity } from "@/hooks/contextmenu";
+import { IProjectItem, ProjectItemEnums, EntityMode } from "@/types/project";
+import {
+  openContextMenuWithEntity,
+  default as contextmenuData,
+  clearSelectedEntity,
+  clearClipboard,
+} from "@/hooks/contextmenu";
+import { useRoute } from "vue-router";
+import { moveFolderOrProject } from "@/api/project";
+import { ElMessage } from "element-plus";
+import { default as entities, appendData } from "@/hooks/project";
 
 export default defineComponent({
   components: {
@@ -35,6 +49,8 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const homeListRef = ref();
+    const route = useRoute();
     const onContextMenu = (e: MouseEvent) => {
       openContextMenuWithEntity(
         {
@@ -51,9 +67,53 @@ export default defineComponent({
         ProjectItemEnums.Space
       );
     };
+    onMounted(() => {
+      homeListRef.value.addEventListener("keyup", onKeyup);
+    });
+    onBeforeUnmount(() => {
+      homeListRef.value.removeEventListener("keyup", onKeyup);
+    })
+    async function onKeyup(e: KeyboardEvent) {
+      if (e.ctrlKey && e.code == "KeyV") {
+        if (
+          contextmenuData.clipBoard.value.clipBoardEntity != null &&
+          contextmenuData.clipBoard.value.mode != null &&
+          contextmenuData.clipBoard.value.mode != EntityMode.None
+        ) {
+          let res = await moveFolderOrProject({
+            objectID: contextmenuData.clipBoard.value.clipBoardEntity.objectID,
+            folderID: +(route.query.folderID || 0),
+            type: contextmenuData.clipBoard.value.clipBoardEntity.type,
+          });
+          if (res.errno == 0 && res.data) {
+            ElMessage({
+              type: "success",
+              message: "移动实体成功",
+            });
+            const index = entities.data.value.findIndex(
+              (r) =>
+                r.objectID ==
+                  contextmenuData.clipBoard.value.clipBoardEntity!.objectID &&
+                r.type == contextmenuData.clipBoard.value.clipBoardEntity!.type
+            );
+            if (index < 0) {
+              appendData(contextmenuData.clipBoard.value.clipBoardEntity);
+            }
+            clearSelectedEntity();
+            clearClipboard();
+          } else {
+            ElMessage({
+              type: "error",
+              message: res.errmsg,
+            });
+          }
+        }
+      }
+    }
     return {
       folderEnum: ProjectItemEnums.Folder,
       onContextMenu,
+      homeListRef,
     };
   },
 });

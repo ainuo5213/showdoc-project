@@ -3,6 +3,9 @@
     class="item-container"
     @dblclick="ondbClick"
     @contextmenu.stop.prevent="onProjectContextMenu"
+    @click.stop.prevent="onclick"
+    ref="projectRef"
+    tabindex="0"
   >
     <el-card
       :class="{
@@ -37,13 +40,25 @@
 </template>
 
 <script lang="ts">
-import { IProjectItem, ProjectItemEnums } from "@/types/project";
-import { defineComponent, PropType, reactive, computed } from "vue-demi";
+import { IProjectItem, ProjectItemEnums, EntityMode } from "@/types/project";
+import {
+  defineComponent,
+  PropType,
+  reactive,
+  computed,
+  watch,
+  onBeforeUnmount,
+  ref,
+  onMounted,
+} from "vue-demi";
 import {
   openContextMenuWithEntity,
   closeContextMenu,
   clearClipboard,
   default as contextmenuData,
+  setSelectEntity,
+  clearSelectedEntity,
+  copyToClipBardMouseLeft,
 } from "@/hooks/contextmenu";
 import { renamFolderOrProject } from "@/api/project";
 import { useEntitySelection } from "@/hooks/useFunction";
@@ -65,6 +80,7 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter();
+    const projectRef = ref();
     const { isSelected } = useEntitySelection(props.data);
     const state = reactive({
       renaming: false,
@@ -82,6 +98,38 @@ export default defineComponent({
         query: { projectID: props.data.objectID },
       });
     };
+
+    onMounted(() => {
+      (projectRef.value as HTMLElement).addEventListener("keyup", onKeyUp);
+    });
+
+    onBeforeUnmount(() => {
+      (projectRef.value as HTMLElement).removeEventListener("keyup", onKeyUp);
+    });
+
+    // 设置选中状态
+    const onclick = (e: MouseEvent) => {
+      if (contextmenuData.showContextMenu) {
+        closeContextMenu();
+      }
+      setSelectEntity(props.data);
+    };
+
+    async function onKeyUp(e: KeyboardEvent) {
+      // cut
+      if (e.ctrlKey && e.code == "KeyX") {
+        ElMessage({
+          type: "success",
+          message: "已加入剪切板",
+        });
+        copyToClipBardMouseLeft(EntityMode.Cut);
+        clearSelectedEntity();
+      }
+      // copy：暂时没有实现
+      else if (e.ctrlKey && e.code == "KeyC") {
+        console.log(111);
+      }
+    }
 
     const isRenaming = computed(() => {
       return (
@@ -129,6 +177,8 @@ export default defineComponent({
       ondbClick,
       isRenaming,
       onRename,
+      onclick,
+      projectRef,
     };
   },
 });
