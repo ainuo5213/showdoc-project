@@ -70,7 +70,6 @@ export default defineComponent({
       const level = $(e.target).attr("level");
       const name = $(e.target).attr("href").slice(1);
       const targetDom = $(`h${level} a[name="${name}"]`);
-      console.log(targetDom.offset().top);
       $("#app").animate(
         {
           scrollTop: targetDom.offset().top + "px",
