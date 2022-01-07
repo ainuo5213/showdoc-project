@@ -12,10 +12,10 @@ namespace showdoc_server.Reponsitory.Document
         Task<int> DeleteDocument(int userID, int documentID);
         Task<int> DeleteFolder(int userID, int folderID);
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
-        Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int objectID, string title);
+        Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int objectID, string title, string content);
         Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int objectID, string title);
         Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page);
-        Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity);
+        Task<DocumentContentDTO> UpdateDocument(int userID, DocumentUpdateDTO entity);
         Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID);
         Task<int> RollbackDocument(int userID, int historyID);
         Task<int> RenameFolder(int userID, int objectID, string name);
@@ -23,5 +23,6 @@ namespace showdoc_server.Reponsitory.Document
         Task<int> MoveDocument(int userID, int objectID, int folderID);
         Task<int> MoveFolder(int userID, int objectID, int folderID);
         Task<IEnumerable<ProjectMenuItemDTO>> GetProjectMenu(int userID, int projectID);
+        Task<IEnumerable<FolderItemDTO>> GetDocumentFolders(int userID, int projectID);
     }
 }

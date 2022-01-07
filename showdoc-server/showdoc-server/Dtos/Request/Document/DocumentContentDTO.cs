@@ -13,8 +13,8 @@ namespace showdoc_server.Dtos.Request.Document
         public DateTime CreateTime { get; set; }
         public string Creator { get; set; }
         public string ProjectName { get; set; }
+        public string FolderName { get; set; }
         public int ProjectID { get; set; }
         public int FolderID { get; set; }
-        public string FolderName { get; set; }
     }
 }

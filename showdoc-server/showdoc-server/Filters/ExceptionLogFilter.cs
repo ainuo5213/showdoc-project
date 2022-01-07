@@ -16,7 +16,7 @@ namespace showdoc_server.Filters
             {
                 context.Result = new JsonResult(new Result(null) { Errmsg = context.Exception.Message, Errno = Dtos.Enums.Errno.Failed })
                 {
-                    StatusCode = 500,
+                    StatusCode = 200,
                 };
                 context.ExceptionHandled = true;
             }

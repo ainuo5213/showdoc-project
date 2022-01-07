@@ -21,7 +21,7 @@ namespace showdoc_server.Services.Document
         {
             if (entity.Type == DocumentObjectTypes.Document)
             {
-                return await this.documentReponsitory.CreateDocument(userID, entity.ProjectID, entity.FolderID, entity.Title);
+                return await this.documentReponsitory.CreateDocument(userID, entity.ProjectID, entity.FolderID, entity.Title, entity.Content);
             }
             else
             {
@@ -48,6 +48,11 @@ namespace showdoc_server.Services.Document
         public async Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID)
         {
             return await this.documentReponsitory.GetDocumentContent(userID, documentID);
+        }
+
+        public async Task<IEnumerable<FolderItemDTO>> GetDocumentFolders(int userID, int projectID)
+        {
+            return await this.documentReponsitory.GetDocumentFolders(userID, projectID);
         }
 
         public async Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page)
@@ -102,7 +107,7 @@ namespace showdoc_server.Services.Document
             return await this.documentReponsitory.RollbackDocument(userID, historyID) > 0;
         }
 
-        public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
+        public async Task<DocumentContentDTO> UpdateDocument(int userID, DocumentUpdateDTO entity)
         {
             return await this.documentReponsitory.UpdateDocument(userID, entity);
         }

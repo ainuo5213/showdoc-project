@@ -1,6 +1,6 @@
 import axios from "axios";
 import { isDev } from "../isFunction";
-import { useToken } from "@/hooks/token";
+import { default as token } from "@/hooks/token";
 
 let url;
 if (isDev()) {
@@ -14,12 +14,10 @@ const instance = axios.create({
   baseURL: url,
   timeout: 10000,
 });
-
 instance.interceptors.request.use((config) => {
-  const { token } = useToken();
-  if (token) {
+  if (token.token.value.length > 0) {
     config.headers = {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token.token.value}`,
       "Content-Type": "application/json; charset=utf-8",
     };
   }

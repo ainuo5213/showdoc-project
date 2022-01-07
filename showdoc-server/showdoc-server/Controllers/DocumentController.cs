@@ -58,7 +58,7 @@ namespace showdoc_server.Controllers
         public async Task<IActionResult> UpdateDocument([FromBody] DocumentUpdateDTO entity)
         {
             int userID = this.GetUserID();
-            bool data = await this.documentService.UpdateDocument(userID, entity);
+            DocumentContentDTO data = await this.documentService.UpdateDocument(userID, entity);
             return await this.SuccessAsync(data);
         }
 
@@ -99,6 +99,14 @@ namespace showdoc_server.Controllers
         {
             int userID = this.GetUserID();
             IEnumerable<ProjectMenuItemDTO> data = await this.documentService.ProjectMenu(userID, projectID);
+            return await this.SuccessAsync(data);
+        }
+
+        [HttpGet("folders")]
+        public async Task<IActionResult> GetDocumentFolders([FromQuery] int projectID)
+        {
+            int userID = this.GetUserID();
+            IEnumerable<FolderItemDTO> data = await this.documentService.GetDocumentFolders(userID, projectID);
             return await this.SuccessAsync(data);
         }
     }

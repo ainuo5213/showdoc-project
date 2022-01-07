@@ -16,18 +16,52 @@ export const routes = [
     },
   },
   {
+    path: "/edit/:projectID/:documentID",
+    name: "edit",
+    component: () => import("@/views/AuthorizedApp/Editor/index.vue"),
+    meta: {
+      title: "编辑文档",
+      requiredAuth: true,
+    },
+  },
+  {
+    path: "/resetPassword",
+    name: "resetPassword",
+    component: () => import("@/views/UnauthorizedApp/ResetPassword/index.vue"),
+    meta: {
+      title: "忘记密码",
+    },
+  },
+  {
     path: "/",
     redirect: "/home",
     name: "home",
     component: () => import("@/components/Layout/index.vue"),
     children: [
       {
-        path: "/home",
+        path: "home",
         name: "index",
         component: () => import("@/views/AuthorizedApp/Home/index.vue"),
         meta: {
           requireAuth: true,
           title: "我的项目",
+        },
+      },
+    ],
+  },
+  {
+    path: "/userInfo",
+    redirect: "/userInfo/index",
+    name: "userInfo",
+    component: () => import("@/components/Layout/index.vue"),
+    children: [
+      {
+        path: "index",
+        name: "userInfo",
+        component: () => import("@/views/AuthorizedApp/UserInfo/index.vue"),
+        meta: {
+          requireAuth: true,
+          title: "我的信息",
         },
       },
     ],
@@ -50,7 +84,7 @@ export const routes = [
     ],
   },
   {
-    path: "/project",
+    path: "/page/:projectID",
     name: "project",
     component: () => import("@/views/AuthorizedApp/Project/index.vue"),
     meta: {

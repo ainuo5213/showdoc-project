@@ -3,9 +3,18 @@
 declare global {
   const ElAvatar: typeof import('element-plus/es')['ElAvatar']
   const ElButton: typeof import('element-plus/es')['ElButton']
+  const ElCard: typeof import('element-plus/es')['ElCard']
+  const ElCascader: typeof import('element-plus/es')['ElCascader']
+  const ElCol: typeof import('element-plus/es')['ElCol']
+  const ElDialog: typeof import('element-plus/es')['ElDialog']
   const ElDropdown: typeof import('element-plus/es')['ElDropdown']
   const ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
   const ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
-  const ElIcon: typeof import('element-plus/es')['ElIcon']
+  const ElForm: typeof import('element-plus/es')['ElForm']
+  const ElFormItem: typeof import('element-plus/es')['ElFormItem']
+  const ElInput: typeof import('element-plus/es')['ElInput']
+  const ElLink: typeof import('element-plus/es')['ElLink']
+  const ElRow: typeof import('element-plus/es')['ElRow']
+  const ElTree: typeof import('element-plus/es')['ElTree']
 }
 export {}

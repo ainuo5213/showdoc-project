@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using showdoc_server.Context;
+using showdoc_server.Dtos.Json;
 using showdoc_server.Dtos.Request.User;
 using showdoc_server.Dtos.Table;
 using SqlSugar;
@@ -16,7 +17,7 @@ namespace showdoc_server.Reponsitory.User
             Users entity = await this.GetUserByPhoneAsync(user.Cellphone);
             if (entity != null)
             {
-                throw new Exception("user already registered");
+                throw new Exception("手机号已注册");
             }
             return await SugarContext.Context.Insertable(user).ExecuteCommandAsync();
         }
@@ -26,7 +27,11 @@ namespace showdoc_server.Reponsitory.User
             Users entity = await this.GetUserByPhoneAsync(user.Cellphone);
             if (entity == null)
             {
-                throw new Exception("user not register");
+                throw new Exception("用户暂未注册");
+            }
+            if (MD5Hash.Hash.Content(user.Password) == entity.Password)
+            {
+                throw new Exception("新旧密码不能相同");
             }
 
             return await SugarContext.Context.Updateable<Users>().SetColumns(r => r.Password == user.Password).Where(r => r.UserID == entity.UserID).ExecuteCommandAsync();

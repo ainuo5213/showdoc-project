@@ -13,11 +13,12 @@ namespace showdoc_server.Services.Document
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
         Task<DocumentContentDTO> CreateDocumentOrFolder(int userID, CreateDocumentOrFolderDTO entity);
         Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page);
-        Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity);
+        Task<DocumentContentDTO> UpdateDocument(int userID, DocumentUpdateDTO entity);
         Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID);
         Task<bool> RollbackDocument(int userID, int historyID);
         Task<bool> RenameDocumentOrFolder(int userID, RenameDocumentOrFolderDTO entity);
         Task<bool> MoveDocumentOrFolder(int userID, MoveDocumentOrFolderDTO entity);
         Task<IEnumerable<ProjectMenuItemDTO>> ProjectMenu(int userID, int projectID);
+        Task<IEnumerable<FolderItemDTO>> GetDocumentFolders(int userID, int projectID);
     }
 }

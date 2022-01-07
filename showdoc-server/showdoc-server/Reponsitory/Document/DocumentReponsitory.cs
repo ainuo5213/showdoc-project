@@ -11,7 +11,7 @@ namespace showdoc_server.Reponsitory.Document
 {
     public class DocumentReponsitory : IDocumentReponsitory
     {
-        public async Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int folderID, string title)
+        public async Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int folderID, string title, string content)
         {
             // 是否是自己的参与的项目，且文件夹是否存在
             bool canIncrease = await SugarContext.Context.Queryable<Folders>()
@@ -23,9 +23,9 @@ namespace showdoc_server.Reponsitory.Document
             // 如果可以增加或folderID=0
             if (canIncrease || folderID == 0)
             {
-                await SugarContext.Context.Insertable(new Documents()
+                Documents document = await SugarContext.Context.Insertable(new Documents()
                 {
-                    Content = string.Empty,
+                    Content = content,
                     CreateTime = DateTime.Now,
                     CreatorID = userID,
                     DeleteStatus = DeleteStatuses.UnDelete,
@@ -34,12 +34,14 @@ namespace showdoc_server.Reponsitory.Document
                     Title = title,
                     UpdateTime = DateTime.Now,
                     UpdatorID = userID,
-                    SortTime = DateTime.Now
+                    SortTime = DateTime.Now,
                 })
-                    .ExecuteCommandAsync();
+                    .ExecuteReturnEntityAsync();
+
+                return await this.GetDocumentContent(userID, document.DocumentID);
             }
 
-            throw new Exception("folder is not valid");
+            throw new Exception("文件夹不存在");
         }
 
         public async Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int folderID, string title)
@@ -68,7 +70,7 @@ namespace showdoc_server.Reponsitory.Document
                     .ExecuteCommandAsync();
             }
 
-            throw new Exception("folder is not valid");
+            throw new Exception("文件夹不存在");
         }
 
         public async Task<int> DeleteDocument(int userID, int documentID)
@@ -78,7 +80,7 @@ namespace showdoc_server.Reponsitory.Document
                 .AnyAsync(document => document.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && document.CreatorID == userID && document.DocumentID == documentID);
             if (isMine)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
 
             return await SugarContext.Context.Updateable<Documents>()
@@ -98,7 +100,7 @@ namespace showdoc_server.Reponsitory.Document
                 .AnyAsync(folder => folder.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && folder.CreatorID == userID && folder.FolderID == folderID && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder);
             if (!isMine)
             {
-                throw new Exception("no permission");
+                throw new Exception("暂无权限");
             }
 
             // 文档下是否还有子文件
@@ -107,7 +109,7 @@ namespace showdoc_server.Reponsitory.Document
 
             if (hasChildFolders || hasChildDocuments)
             {
-                throw new Exception("folder is using. if you want to delete the folder, please delete the children at first");
+                throw new Exception("文件夹正在使用");
             }
 
             return await SugarContext.Context.Updateable<Folders>()
@@ -126,11 +128,11 @@ namespace showdoc_server.Reponsitory.Document
             // 1. 加入了该项目
             // 2. 项目或文档没有被删除
             DocumentContentDTO data = await SugarContext.Context.Queryable<Documents>()
-               .Where(document => document.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && document.DocumentID == documentID)
                .InnerJoin<ProjectUsers>((document, projectUser) => document.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
-               .InnerJoin<Projects>((document, projectUser, project) => projectUser.ProjectID == project.ProjectID && project.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete)
+               .InnerJoin<Projects>((document, projectUser, project) => projectUser.ProjectID == project.ProjectID)
                .InnerJoin<Users>((document, projectUser, project, _user) => document.CreatorID == _user.UserID)
-               .InnerJoin<Folders>((document, projectUser, project, _user, folder) => document.FolderID == folder.FolderID && folder.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete)
+               .LeftJoin<Folders>((document, projectUser, project, _user, folder) => document.FolderID == folder.FolderID)
+               .Where((document, projectUser, project, _user, folder) => document.DeleteStatus == Dtos.Json.DeleteStatuses.UnDelete && document.DocumentID == documentID)
                .Select((document, projectUser, project, _user, folder) => new DocumentContentDTO()
                {
                    Content = document.Content,
@@ -146,10 +148,21 @@ namespace showdoc_server.Reponsitory.Document
                .FirstAsync();
             if (data == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
 
             return data;
+        }
+
+        public async Task<IEnumerable<FolderItemDTO>> GetDocumentFolders(int userID, int projectID)
+        {
+            return await SugarContext.Context.Queryable<Folders>().Where(folder => folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder && folder.ProjectID == projectID && folder.DeleteStatus == DeleteStatuses.UnDelete)
+                .Select(folder => new FolderItemDTO()
+                {
+                    FolderID = folder.FolderID,
+                    Name = folder.Name,
+                    ParentID = folder.ParentID,
+                }).ToListAsync();
         }
 
         public async Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page)
@@ -183,13 +196,13 @@ namespace showdoc_server.Reponsitory.Document
         {
             // 递归查询所以文件夹，再查询所有文件夹下的文件
             var project = await SugarContext.Context.Queryable<Projects>()
-                .Where(project => project.ProjectID == projectID && project.DeleteStatus == DeleteStatuses.UnDelete)
                 .InnerJoin<ProjectUsers>((project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Where((project, projectUser) => project.ProjectID == projectID && project.DeleteStatus == DeleteStatuses.UnDelete)
                 .Select((project, projectUser) => project)
                 .FirstAsync();
             if (project == null)
             {
-                throw new Exception("project has been deleted");
+                throw new Exception("项目不存在");
             }
             var folders = SugarContext.Context.Queryable<Folders>()
                 .Where(folder => folder.ProjectID == projectID && folder.DeleteStatus == DeleteStatuses.UnDelete && folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder)
@@ -237,7 +250,7 @@ namespace showdoc_server.Reponsitory.Document
             }).FirstAsync();
             if (currentVersion == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
             var historyVersion = await query.Select((historyDocument, document, project, projectUser, _user) => new HistoryComparisonItemDTO()
             {
@@ -273,11 +286,11 @@ namespace showdoc_server.Reponsitory.Document
                 .Select((folder, project, projectUser) => folder).FirstAsync();
             if (document == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
             if (folder == null && folderID != 0)
             {
-                throw new Exception("folder has been deleted");
+                throw new Exception("项目不存在");
             }
 
             return await SugarContext.Context.Updateable<Documents>()
@@ -308,11 +321,11 @@ namespace showdoc_server.Reponsitory.Document
                 .Select((folder, project, projectUser) => folder).FirstAsync();
             if (originFolder == null)
             {
-                throw new Exception("origin folder has been deleted");
+                throw new Exception("文件夹不存在");
             }
             if (targetFolder == null && parentID != 0)
             {
-                throw new Exception("target folder has been deleted");
+                throw new Exception("文件夹不存在");
             }
             return await SugarContext.Context.Updateable<Folders>()
                 .SetColumns(document => new Folders()
@@ -335,7 +348,7 @@ namespace showdoc_server.Reponsitory.Document
                 .FirstAsync();
             if (document == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
 
             return await SugarContext.Context.Updateable<Documents>()
@@ -360,7 +373,7 @@ namespace showdoc_server.Reponsitory.Document
                 .FirstAsync();
             if (folder == null)
             {
-                throw new Exception("folder has been deleted");
+                throw new Exception("文件夹不存在");
             }
             return await SugarContext.Context.Updateable<Folders>()
                 .SetColumns(document => new Folders()
@@ -384,7 +397,7 @@ namespace showdoc_server.Reponsitory.Document
             var historyDocument = await query.Select((historyDocument, document, project, projectUser) => historyDocument).FirstAsync();
             if (document == null || historyDocument == null)
             {
-                throw new Exception("history or document has been deleted");
+                throw new Exception("文档不存在");
             }
             // 将该版本及之后的历史删掉
             await SugarContext.Context.Deleteable<HistoryDocuments>()
@@ -403,24 +416,24 @@ namespace showdoc_server.Reponsitory.Document
             return 1;
         }
 
-        public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
+        public async Task<DocumentContentDTO> UpdateDocument(int userID, DocumentUpdateDTO entity)
         {
             // 是否能保存：1、是否参加这个项目，文档是否存在
             Documents document = await SugarContext.Context.Queryable<Documents>()
-                .Where(document => document.DocumentID == entity.DocumentID && document.DeleteStatus == DeleteStatuses.UnDelete)
-                .InnerJoin<Projects>((document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete)
+                .InnerJoin<Projects>((document, project) => document.ProjectID == project.ProjectID && project.DeleteStatus == DeleteStatuses.UnDelete && project.ProjectID == entity.ProjectID)
                 .InnerJoin<ProjectUsers>((document, project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Where((document, project, projectUser) => document.DocumentID == entity.DocumentID && document.DeleteStatus == DeleteStatuses.UnDelete)
                 .Select((document, project, projectUser) => document)
                 .FirstAsync();
             if (document == null)
             {
-                throw new Exception("document has been deleted");
+                throw new Exception("文档不存在");
             }
 
             // 添加历史的前提是两次变更的内容对比不一样
             if (entity.Content == document.Content)
             {
-                return true;
+                return await this.GetDocumentContent(userID, entity.DocumentID);
             }
             await SugarContext.Context.Insertable(new HistoryDocuments()
             {
@@ -429,16 +442,18 @@ namespace showdoc_server.Reponsitory.Document
                 CreatorID = userID,
                 DocumentID = document.DocumentID,
             }).ExecuteCommandAsync();
-            await SugarContext.Context.Updateable(document)
+            await SugarContext.Context.Updateable<Documents>()
                 .SetColumns(r => new Documents()
                 {
+                    Title = entity.Title,
+                    FolderID = entity.FolderID,
                     UpdateTime = DateTime.Now,
                     UpdatorID = userID,
                     Content = entity.Content,
                 })
                 .Where(r => r.DocumentID == entity.DocumentID && r.DeleteStatus == DeleteStatuses.UnDelete)
                 .ExecuteCommandAsync();
-            return true;
+            return await this.GetDocumentContent(userID, entity.DocumentID);
         }
     }
 }
