@@ -11,5 +11,6 @@ namespace showdoc_server.Dtos.Request.Document
         public string Title { get; set; }
         public DocumentObjectTypes Type { get; set; }
         public int ProjectID { get; set; }
+        public string Content { get; set; }
     }
 }

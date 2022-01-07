@@ -21,7 +21,7 @@ namespace showdoc_server.Services.Document
         {
             if (entity.Type == DocumentObjectTypes.Document)
             {
-                return await this.documentReponsitory.CreateDocument(userID, entity.ProjectID, entity.FolderID, entity.Title);
+                return await this.documentReponsitory.CreateDocument(userID, entity.ProjectID, entity.FolderID, entity.Title, entity.Content);
             }
             else
             {
@@ -102,7 +102,7 @@ namespace showdoc_server.Services.Document
             return await this.documentReponsitory.RollbackDocument(userID, historyID) > 0;
         }
 
-        public async Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity)
+        public async Task<DocumentContentDTO> UpdateDocument(int userID, DocumentUpdateDTO entity)
         {
             return await this.documentReponsitory.UpdateDocument(userID, entity);
         }

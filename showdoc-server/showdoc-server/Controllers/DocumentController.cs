@@ -58,7 +58,7 @@ namespace showdoc_server.Controllers
         public async Task<IActionResult> UpdateDocument([FromBody] DocumentUpdateDTO entity)
         {
             int userID = this.GetUserID();
-            bool data = await this.documentService.UpdateDocument(userID, entity);
+            DocumentContentDTO data = await this.documentService.UpdateDocument(userID, entity);
             return await this.SuccessAsync(data);
         }
 

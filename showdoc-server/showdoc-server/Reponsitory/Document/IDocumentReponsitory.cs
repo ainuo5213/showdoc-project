@@ -12,10 +12,10 @@ namespace showdoc_server.Reponsitory.Document
         Task<int> DeleteDocument(int userID, int documentID);
         Task<int> DeleteFolder(int userID, int folderID);
         Task<DocumentContentDTO> GetDocumentContent(int userID, int documentID);
-        Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int objectID, string title);
+        Task<DocumentContentDTO> CreateDocument(int userID, int projectID, int objectID, string title, string content);
         Task<DocumentContentDTO> CreateFolder(int userID, int projectID, int objectID, string title);
         Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page);
-        Task<bool> UpdateDocument(int userID, DocumentUpdateDTO entity);
+        Task<DocumentContentDTO> UpdateDocument(int userID, DocumentUpdateDTO entity);
         Task<HistoryComparisonDTO> HistoryDocumentComparison(int userID, int historyID);
         Task<int> RollbackDocument(int userID, int historyID);
         Task<int> RenameFolder(int userID, int objectID, string name);
