@@ -154,6 +154,17 @@ namespace showdoc_server.Reponsitory.Document
             return data;
         }
 
+        public async Task<IEnumerable<FolderItemDTO>> GetDocumentFolders(int userID, int projectID)
+        {
+            return await SugarContext.Context.Queryable<Folders>().Where(folder => folder.Type == Dtos.Request.Folder.FolderTypes.DocumentFolder && folder.ProjectID == projectID && folder.DeleteStatus == DeleteStatuses.UnDelete)
+                .Select(folder => new FolderItemDTO()
+                {
+                    FolderID = folder.FolderID,
+                    Name = folder.Name,
+                    ParentID = folder.ParentID,
+                }).ToListAsync();
+        }
+
         public async Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page)
         {
             // 只能查看当前自己加入的项目中的文档历史

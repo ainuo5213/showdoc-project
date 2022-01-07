@@ -6,7 +6,7 @@
       </div>
       <div class="content-box">
         <div class="content">
-          <md-preview :data="data"></md-preview>
+          <md-preview v-if="data != null" :data="data"></md-preview>
         </div>
       </div>
     </div>
@@ -17,7 +17,6 @@
 import { defineComponent } from "vue-demi";
 import MdPreview from "@/components/MarkdownPreview/index.vue";
 import { default as detailState } from "@/hooks/detail";
-import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -33,7 +32,7 @@ export default defineComponent({
 
 <style scoped lang="less">
 .detail-container {
-  position: static;
+  position: relative;
   box-shadow: 0 1px 6px #ccc;
   background-color: #fff;
   border-bottom: 1px solid #d9d9d9;

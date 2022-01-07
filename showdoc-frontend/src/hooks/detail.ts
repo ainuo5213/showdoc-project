@@ -26,6 +26,18 @@ watch(state.documentID, async (value) => {
     if (res.errno == 0) {
       source.document = res.data;
     }
+  } else {
+    source.document = {
+      content: "",
+      createTime: "",
+      creator: "",
+      documentID: 0,
+      title: "",
+      projectName: "",
+      parentID: 0,
+      folderID: 0,
+      folderName: "",
+    };
   }
 });
 

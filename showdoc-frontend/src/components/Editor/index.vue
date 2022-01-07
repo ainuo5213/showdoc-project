@@ -12,8 +12,6 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref } from "vue-demi";
-import "jquery";
-const editormd = (window as any).editormd;
 export default defineComponent({
   name: "Editor",
   props: {
@@ -27,7 +25,7 @@ export default defineComponent({
     const editor = ref();
     const textareaRef = ref();
     onMounted(() => {
-      editor.value = editormd("editor", {
+      editor.value = (window as any).editormd("editor", {
         width: "100%",
         height: "100%", 
         path: "/editor.md/lib/",

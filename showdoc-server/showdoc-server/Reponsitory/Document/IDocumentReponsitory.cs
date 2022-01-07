@@ -23,5 +23,6 @@ namespace showdoc_server.Reponsitory.Document
         Task<int> MoveDocument(int userID, int objectID, int folderID);
         Task<int> MoveFolder(int userID, int objectID, int folderID);
         Task<IEnumerable<ProjectMenuItemDTO>> GetProjectMenu(int userID, int projectID);
+        Task<IEnumerable<FolderItemDTO>> GetDocumentFolders(int userID, int projectID);
     }
 }

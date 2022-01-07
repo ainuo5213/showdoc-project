@@ -10,8 +10,8 @@
       <li>
         <icon :size="15" name="wenjianjia"></icon>
       </li>
-      <li>
-        <icon :size="15" name="editor" @click="goEdit"></icon>
+      <li v-if="showEdit">
+        <icon :size="15" name="editor" @click="goEdit(documentID)"></icon>
       </li>
       <li>
         <icon :size="15" name="history1"></icon>
@@ -22,9 +22,10 @@
 
 <script lang="ts">
 import Icon from "@/components/Icon/index.vue";
-import { defineComponent } from "vue-demi";
+import { computed, defineComponent } from "vue-demi";
 import { useRoute, useRouter } from "vue-router";
 import { default as folderState } from "@/hooks/folder";
+import { default as detailState, setCurrentDocument } from "@/hooks/detail";
 export default defineComponent({
   components: {
     Icon,
@@ -37,23 +38,31 @@ export default defineComponent({
         name: "home",
         query: {
           folderID: +(
-            folderState.folders.value[folderState.folders.value.length - 1]?.folderID || 0
+            folderState.folders.value[folderState.folders.value.length - 1]
+              ?.folderID || 0
           ),
         },
       });
     };
     const goEdit = (documentID: number) => {
+      setCurrentDocument(0);
       router.push({
         name: "edit",
         params: {
           projectID: route.params.projectID,
-          documentID: documentID
+          documentID: documentID,
         },
       });
-    }
+    };
+
+    const showEdit = computed(() => detailState.document.value.documentID > 0);
+    const documentID = computed(() => detailState.document.value.documentID);
+
     return {
       goBack,
-      goEdit
+      goEdit,
+      documentID,
+      showEdit,
     };
   },
 });
@@ -63,6 +72,7 @@ export default defineComponent({
 .sidearea-container {
   color: #333;
   width: 240px;
+  position: fixed;
   ul {
     display: flex;
     flex-wrap: wrap;

@@ -41,3 +41,10 @@ export interface IUpdateDocumentForm {
   content: string;
   folderID: number;
 }
+
+export interface IFolderItemData {
+  parentID: number;
+  name: string;
+  folderID: number;
+  children?: IFolderItemData[];
+}

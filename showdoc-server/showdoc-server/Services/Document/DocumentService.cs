@@ -50,6 +50,11 @@ namespace showdoc_server.Services.Document
             return await this.documentReponsitory.GetDocumentContent(userID, documentID);
         }
 
+        public async Task<IEnumerable<FolderItemDTO>> GetDocumentFolders(int userID, int projectID)
+        {
+            return await this.documentReponsitory.GetDocumentFolders(userID, projectID);
+        }
+
         public async Task<ListItemDTO<DocumentHistoryDTO>> GetDocumentHistory(int userID, int documentID, int page)
         {
             return await this.documentReponsitory.GetDocumentHistory(userID, documentID, page);

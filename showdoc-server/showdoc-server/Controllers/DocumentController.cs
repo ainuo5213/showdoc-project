@@ -101,5 +101,13 @@ namespace showdoc_server.Controllers
             IEnumerable<ProjectMenuItemDTO> data = await this.documentService.ProjectMenu(userID, projectID);
             return await this.SuccessAsync(data);
         }
+
+        [HttpGet("folders")]
+        public async Task<IActionResult> GetDocumentFolders([FromQuery] int projectID)
+        {
+            int userID = this.GetUserID();
+            IEnumerable<FolderItemDTO> data = await this.documentService.GetDocumentFolders(userID, projectID);
+            return await this.SuccessAsync(data);
+        }
     }
 }

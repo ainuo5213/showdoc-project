@@ -3,7 +3,8 @@ import {
   DocumentTypeEnums,
   IDocumentData,
   IUpdateDocumentForm,
-  IDocumentTreeData
+  IDocumentTreeData,
+  IFolderItemData
 } from "@/types/document";
 import axios from "@/utils/http";
 
@@ -36,6 +37,16 @@ export async function getDocumentContent(
   documentID: number
 ): Promise<IDataResult<IDocumentData>> {
   return await axios.get("/api/document/content", {
+    params: {
+      documentID,
+    },
+  });
+}
+
+export async function getProjectFolders(
+  documentID: number
+): Promise<IDataResult<IFolderItemData[]>> {
+  return await axios.get("/api/document/folders", {
     params: {
       documentID,
     },

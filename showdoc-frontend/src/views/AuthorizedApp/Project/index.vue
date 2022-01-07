@@ -21,7 +21,6 @@ import Search from "@/components/Search/index.vue";
 import Tree from "./components/Tree.vue";
 import Detail from "./components/Detail.vue";
 import SideArea from "./components/SideArea.vue";
-import { default as documentState } from "@/hooks/detail";
 
 export default defineComponent({
   components: {
@@ -37,7 +36,6 @@ export default defineComponent({
 
     return {
       onSearch,
-      documentState,
     };
   },
 });
@@ -53,11 +51,18 @@ export default defineComponent({
     height: 100%;
     width: 80%;
     margin: 0 auto;
+    justify-content: center;
   }
 }
 
-.search-container {
-  width: 100%;
+.search-container,
+.tree-container {
+  position: fixed;
+  width: 250px;
+}
+
+.tree-container {
+  margin-top: 40px;
 }
 
 .col-left {

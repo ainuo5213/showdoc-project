@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="stylesheet" href="<%= BASE_URL %>editor.md/css/editormd.css" />
   </head>
   <body>
     <noscript>
@@ -15,13 +16,11 @@
         continue.</strong
       >
     </noscript>
-    <div id="app"></div>
+    <div id="app" class="scrollbar"></div>
     <!-- built files will be auto injected -->
   </body>
   <script src="<%= BASE_URL %>jquery/dist/jquery.min.js"></script>
-  <link
-    rel="stylesheet"
-    href="<%= BASE_URL %>editor.md/css/editormd.css"
-  />
+  <script src="<%= BASE_URL %>editor.md/lib/marked.min.js"></script>
+  <script src="<%= BASE_URL %>editor.md/lib/prettify.min.js"></script>
   <script src="<%= BASE_URL %>editor.md/editormd.min.js"></script>
 </html>
