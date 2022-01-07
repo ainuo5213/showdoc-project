@@ -39,4 +39,4 @@
 
 ### 项目详情预览
 
-![](mdpreview.gif)
+![](assets/mdpreview.gif)
