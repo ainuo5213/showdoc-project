@@ -13,3 +13,7 @@ export interface IDocumentTreeData {
   sortTime: string;
   children?: IDocumentTreeData[];
 }
+
+export interface IDetailData {
+  isEditing: boolean;
+}

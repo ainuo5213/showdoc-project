@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import ContextMenu from "@/components/contextmenu/index.vue";
+import ContextMenu from "@/components/Contextmenu/index.vue";
 import { computed, defineComponent, watch, ref } from "vue-demi";
 import HomeList from "./components/HomeList.vue";
 import Search from "@/components/Search/index.vue";

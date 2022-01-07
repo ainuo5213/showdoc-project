@@ -364,8 +364,11 @@ li {
     list-style: none;
 }
 
+body {
+  background-color: #fafafa;
+}
+
 #app {
-  background-color: rgba(0, 0, 0, 0.2) !important;
   padding: 20px;
   box-sizing: border-box;
   max-height: 100vh;

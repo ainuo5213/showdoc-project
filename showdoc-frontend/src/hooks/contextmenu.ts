@@ -33,7 +33,7 @@ const originData: IContextMenuData = {
   contxtMenuType: ProjectItemEnums.None,
 };
 
-export const data: IContextMenuData = reactive(originData);
+const data: IContextMenuData = reactive(originData);
 const state = toRefs(readonly(data));
 export default state;
 

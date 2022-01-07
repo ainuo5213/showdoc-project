@@ -1,11 +1,16 @@
 <template>
   <div class="document-container">
-    <el-row>
-      <el-col :span="6" class="col-left">
+    <el-row class="row-container">
+      <el-col :span="4" class="col-left">
         <search @search="onSearch"></search>
         <tree :data="data"></tree>
       </el-col>
-      <el-col :span="18"></el-col>
+      <el-col :span="12" class="col-mid">
+        <detail></detail>
+      </el-col>
+      <el-col :span="3" class="col-right">
+        <side-area></side-area>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -15,6 +20,9 @@ import { computed, defineComponent } from "vue-demi";
 import Search from "@/components/Search/index.vue";
 import { DocumentTypeEnums, IDocumentTreeData } from "@/types/document";
 import Tree from "./components/Tree.vue";
+import Detail from "./components/Detail.vue";
+import SideArea from "./components/SideArea.vue";
+import { default as documentState } from "@/hooks/detail";
 const sourceData: IDocumentTreeData[] = [
   {
     projectID: 0,
@@ -46,6 +54,8 @@ export default defineComponent({
   components: {
     Search,
     Tree,
+    Detail,
+    SideArea,
   },
   setup() {
     const onSearch = (value: string) => {
@@ -73,6 +83,7 @@ export default defineComponent({
     return {
       onSearch,
       data: treeData,
+      documentState,
     };
   },
 });
@@ -81,9 +92,13 @@ export default defineComponent({
 <style lang="less" scoped>
 .document-container {
   height: 100%;
+  box-sizing: border-box;
+  padding-top: 80px;
 
-  .el-row {
+  .row-container {
     height: 100%;
+    width: 80%;
+    margin: 0 auto;
   }
 }
 
@@ -93,5 +108,10 @@ export default defineComponent({
 
 .col-left {
   max-width: 360px;
+  margin-right: 20px;
+}
+
+.col-mid {
+  margin-right: 20px;
 }
 </style>
