@@ -6,5 +6,8 @@ import ElmentPlus from "element-plus";
 import "element-plus/dist/index.css";
 import "@/assets/normalize.css";
 import "@/assets/common.css";
+import mavonEditor from "mavon-editor";
+import "mavon-editor/dist/css/index.css";
+import $ from "jquery";
 
-createApp(App).use(router).use(ElmentPlus).mount("#app");
+createApp(App).use(mavonEditor).use(router).use(ElmentPlus).mount("#app");

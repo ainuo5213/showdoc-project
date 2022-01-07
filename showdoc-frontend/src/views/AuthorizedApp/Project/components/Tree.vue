@@ -1,8 +1,19 @@
 <template>
-  <el-tree class="tree-container scrollbar" :data="data" :props="construct">
+  <el-tree
+    class="tree-container scrollbar"
+    :data="data"
+    :props="construct"
+    @node-click="onNodeClick"
+  >
     <template #default="{ node, data }">
       <span class="custom-tree-node">
-        <span>{{ node.label }}</span>
+        <div class="prefix">
+          <icon
+            :size="16"
+            :name="data.type == 0 ? 'wendang' : 'wenjianjia_o'"
+          ></icon>
+          <span>{{ node.label }}</span>
+        </div>
         <img
           v-if="data.type === folder"
           class="icon"
@@ -18,10 +29,14 @@
 
 <script lang="ts">
 import { IDocumentTreeData, DocumentTypeEnums } from "@/types/document";
-import { computed, defineComponent, PropType } from "vue-demi";
+import { defineComponent, PropType } from "vue-demi";
+import Icon from "@/components/Icon/index.vue";
 
 export default defineComponent({
   name: "Tree",
+  components: {
+    Icon,
+  },
   props: {
     data: {
       type: Array as PropType<IDocumentTreeData[]>,
@@ -29,12 +44,19 @@ export default defineComponent({
     },
   },
   setup() {
+    const onNodeClick = (data: IDocumentTreeData, node?: any) => {
+      if (data.type == DocumentTypeEnums.Document) {
+        // TODO: 请求文档数据
+
+      }
+    };
     return {
       folder: DocumentTypeEnums.Folder,
       construct: {
         children: "children",
         label: "name",
       },
+      onNodeClick,
     };
   },
 });
@@ -73,11 +95,17 @@ export default defineComponent({
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      .prefix {
+        width: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
     }
 
     .icon {
       width: 16px;
-      height: 16px;
       transform: rotate(0deg);
       transition: all 0.5s;
 

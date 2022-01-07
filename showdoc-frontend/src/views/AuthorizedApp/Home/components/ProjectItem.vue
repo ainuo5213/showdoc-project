@@ -84,7 +84,7 @@ export default defineComponent({
       clearClipboard();
       router.push({
         name: "project",
-        query: { projectID: props.data.objectID },
+        params: { projectID: props.data.objectID },
       });
     };
     // 设置选中状态

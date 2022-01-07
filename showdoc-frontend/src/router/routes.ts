@@ -16,6 +16,15 @@ export const routes = [
     },
   },
   {
+    path: "/edit/:projectID/:documentID",
+    name: "edit",
+    component: () => import("@/views/AuthorizedApp/Editor/index.vue"),
+    meta: {
+      title: "编辑文档",
+      requiredAuth: true
+    },
+  },
+  {
     path: "/resetPassword",
     name: "resetPassword",
     component: () => import("@/views/UnauthorizedApp/ResetPassword/index.vue"),
@@ -75,7 +84,7 @@ export const routes = [
     ],
   },
   {
-    path: "/project",
+    path: "/project/:projectID",
     name: "project",
     component: () => import("@/views/AuthorizedApp/Project/index.vue"),
     meta: {

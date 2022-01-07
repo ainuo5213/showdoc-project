@@ -17,3 +17,24 @@ export interface IDocumentTreeData {
 export interface IDetailData {
   isEditing: boolean;
 }
+
+export interface IDocumentData {
+  documentID: number;
+  title: string;
+  content: string;
+  createTime: string;
+  creator: string;
+  projectName: string;
+  parentID: number;
+  folderID: number;
+  folderName: string;
+}
+
+
+export interface IUpdateDocumentForm {
+  projectID: number;
+  documentID: number;
+  title: string;
+  content: string;
+  folderID: number;
+}
