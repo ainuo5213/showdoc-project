@@ -15,7 +15,10 @@ export interface IDocumentTreeData {
 }
 
 export interface IDetailData {
-  isEditing: boolean;
+  documentID: number;
+  searchValue: string;
+  menus: IDocumentTreeData[];
+  document: IDocumentData;
 }
 
 export interface IDocumentData {

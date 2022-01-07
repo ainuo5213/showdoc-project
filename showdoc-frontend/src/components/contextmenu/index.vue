@@ -231,7 +231,7 @@ export default defineComponent({
         // router跳转
         router.replace({
           name: "project",
-          params: { projectID: contextmenuData.entity.value.objectID },
+          params: { projectID: contextmenuData.entity.value.objectID, documentID: 0 },
         });
         clearFolders();
       }

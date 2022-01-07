@@ -24,11 +24,11 @@ export function setToken(token: IToken) {
 }
 
 export function setFolder(folders: IFolderHistory[]) {
-  localStorage.setItem(FOLDER, JSON.stringify(folders));
+  sessionStorage.setItem(FOLDER, JSON.stringify(folders));
 }
 
 export function getFolders(): IFolderHistory[] {
-  const info = localStorage.getItem(FOLDER);
+  const info = sessionStorage.getItem(FOLDER);
   let folders: IFolderHistory[] = [];
   if (info?.length) {
     try {

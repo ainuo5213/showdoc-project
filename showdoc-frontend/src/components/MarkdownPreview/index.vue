@@ -3,8 +3,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from "vue-demi";
+import { defineComponent, PropType } from "vue-demi";
 import MarkdownIt from "markdown-it";
+import { IDocumentData } from "@/types/document";
 
 
 const md: MarkdownIt = new MarkdownIt({
@@ -16,14 +17,12 @@ const md: MarkdownIt = new MarkdownIt({
 export default defineComponent({
   props: {
     data: {
-      type: String as PropType<string>,
+      type: Object as PropType<IDocumentData>,
       required: true,
     },
   },
   setup(props) {
-    console.log(props.data);
-    const compiledMdContent = md.render(props.data);
-    console.log(compiledMdContent);
+    const compiledMdContent = md.render(props.data.content);
     return {
       content: compiledMdContent,
     };

@@ -21,7 +21,7 @@ export const routes = [
     component: () => import("@/views/AuthorizedApp/Editor/index.vue"),
     meta: {
       title: "编辑文档",
-      requiredAuth: true
+      requiredAuth: true,
     },
   },
   {
@@ -84,7 +84,7 @@ export const routes = [
     ],
   },
   {
-    path: "/project/:projectID",
+    path: "/page/:projectID",
     name: "project",
     component: () => import("@/views/AuthorizedApp/Project/index.vue"),
     meta: {

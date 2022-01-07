@@ -1,29 +1,31 @@
-s
 <template>
   <div class="detail-container">
-    <div class="title-box">
-      <h2 class="title">这是标题</h2>
-    </div>
-    <div class="content-box">
-      <div class="content">
+    <div v-if="data.documentID > 0">
+      <div class="title-box">
+        <h2 class="title">{{ data.title }}</h2>
+      </div>
+      <div class="content-box">
+        <div class="content">
           <md-preview :data="data"></md-preview>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue-demi";
+import { defineComponent } from "vue-demi";
 import MdPreview from "@/components/MarkdownPreview/index.vue";
+import { default as detailState } from "@/hooks/detail";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
     MdPreview,
   },
   setup() {
-    const data = `## app\n \`\`\`\n javascript\n asdasd\n \`\`\``;
     return {
-      data: data,
+      data: detailState.document,
     };
   },
 });

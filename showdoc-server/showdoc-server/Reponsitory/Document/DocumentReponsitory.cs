@@ -185,8 +185,8 @@ namespace showdoc_server.Reponsitory.Document
         {
             // 递归查询所以文件夹，再查询所有文件夹下的文件
             var project = await SugarContext.Context.Queryable<Projects>()
-                .Where(project => project.ProjectID == projectID && project.DeleteStatus == DeleteStatuses.UnDelete)
                 .InnerJoin<ProjectUsers>((project, projectUser) => project.ProjectID == projectUser.ProjectID && projectUser.UserID == userID)
+                .Where((project, projectUser) => project.ProjectID == projectID && project.DeleteStatus == DeleteStatuses.UnDelete)
                 .Select((project, projectUser) => project)
                 .FirstAsync();
             if (project == null)

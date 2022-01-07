@@ -37,7 +37,7 @@ import { IProjectItem } from "@/types/project";
 import { default as contextmenuData } from "@/hooks/contextmenu";
 import { useRequest } from "@/hooks/useFunction";
 import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
-import { default as folderData, removeChildFolders } from "@/hooks/folder";
+import { default as folderData, removeChildFolders, clearFolders } from "@/hooks/folder";
 import { default as state, removeData, setData } from "@/hooks/project";
 import { default as dragState } from "@/hooks/drag";
 import { moveFolderOrProject } from "@/api/project";
@@ -73,7 +73,6 @@ export default defineComponent({
         setData(res.data);
       }
     }
-
     fetchData();
     watch(
       folderID,

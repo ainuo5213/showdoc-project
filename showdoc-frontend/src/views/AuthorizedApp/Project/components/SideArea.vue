@@ -8,10 +8,10 @@
         <icon :size="15" name="plus" @click="goEdit(0)"></icon>
       </li>
       <li>
-        <icon :size="15" name="wenjianjia" @click="goFolder"></icon>
+        <icon :size="15" name="wenjianjia"></icon>
       </li>
       <li>
-        <icon :size="15" name="editor"></icon>
+        <icon :size="15" name="editor" @click="goEdit"></icon>
       </li>
       <li>
         <icon :size="15" name="history1"></icon>

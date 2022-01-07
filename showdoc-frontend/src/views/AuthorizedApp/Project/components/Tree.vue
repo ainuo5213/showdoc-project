@@ -1,7 +1,7 @@
 <template>
   <el-tree
     class="tree-container scrollbar"
-    :data="data"
+    :data="treeData || []"
     :props="construct"
     @node-click="onNodeClick"
   >
@@ -12,7 +12,7 @@
             :size="16"
             :name="data.type == 0 ? 'wendang' : 'wenjianjia_o'"
           ></icon>
-          <span>{{ node.label }}</span>
+          <span class="text elipsis">{{ node.label }}</span>
         </div>
         <img
           v-if="data.type === folder"
@@ -31,6 +31,9 @@
 import { IDocumentTreeData, DocumentTypeEnums } from "@/types/document";
 import { defineComponent, PropType } from "vue-demi";
 import Icon from "@/components/Icon/index.vue";
+import { getMenus } from "@/api/document";
+import { useRoute, useRouter } from "vue-router";
+import { treeData, setCurrentDocument, setMenus } from "@/hooks/detail";
 
 export default defineComponent({
   name: "Tree",
@@ -44,10 +47,24 @@ export default defineComponent({
     },
   },
   setup() {
+    const route = useRoute();
+    async function getProjectMenu() {
+      let res = await getMenus(+route.params.projectID);
+      if (res.errno == 0 && res.data.length > 0) {
+        setMenus(res.data);
+        if (
+          treeData.value[0] &&
+          treeData.value[0].type == DocumentTypeEnums.Document
+        ) {
+          setCurrentDocument(treeData.value[0].objectID);
+        }
+      }
+    }
+    getProjectMenu();
+
     const onNodeClick = (data: IDocumentTreeData, node?: any) => {
       if (data.type == DocumentTypeEnums.Document) {
-        // TODO: 请求文档数据
-
+        setCurrentDocument(data.objectID);
       }
     };
     return {
@@ -57,6 +74,7 @@ export default defineComponent({
         label: "name",
       },
       onNodeClick,
+      treeData,
     };
   },
 });
@@ -97,10 +115,13 @@ export default defineComponent({
       align-items: center;
 
       .prefix {
-        width: 40px;
+        width: 80%;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+
+        .text {
+          max-width: 160px;
+        }
       }
     }
 
@@ -108,6 +129,7 @@ export default defineComponent({
       width: 16px;
       transform: rotate(0deg);
       transition: all 0.5s;
+      margin-right: 20px;
 
       &.expanded {
         transform: rotate(90deg);
