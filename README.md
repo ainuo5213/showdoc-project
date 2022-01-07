@@ -33,7 +33,7 @@
 
 ### 首页
 
-![](assets/home.png)
+![](assets/home.gif)
 
 
 
