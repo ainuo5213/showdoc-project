@@ -50,13 +50,15 @@ export default defineComponent({
     const route = useRoute();
     async function getProjectMenu() {
       let res = await getMenus(+route.params.projectID);
-      if (res.errno == 0 && res.data.length > 0) {
+      if (res.errno == 0) {
         setMenus(res.data);
         if (
           treeData.value[0] &&
           treeData.value[0].type == DocumentTypeEnums.Document
         ) {
           setCurrentDocument(treeData.value[0].objectID);
+        } else {
+          setCurrentDocument(0);
         }
       }
     }

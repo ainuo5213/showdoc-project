@@ -92,15 +92,15 @@ export default defineComponent({
       loading: false,
     });
     async function getFolders() {
-      const documentID = +(route.params.documentID || 0);
-      if (documentID > 0) {
-        const res = await getProjectFolders(documentID);
+      const projectID = +(route.params.projectID || 0);
+      if (projectID > 0) {
+        const res = await getProjectFolders(projectID);
         if (res.errno === 0) {
           return res.data;
         }
         return Promise.reject(res.errmsg);
       }
-      return Promise.reject("文档ID错误");
+      return Promise.reject("项目ID错误");
     }
     async function getDetail() {
       const documentID = +(route.params.documentID || 0);
@@ -111,7 +111,6 @@ export default defineComponent({
         }
         return Promise.reject(res.errmsg);
       }
-      return Promise.reject("文档ID错误");
     }
 
     function onKeyUp(e: KeyboardEvent) {
@@ -133,13 +132,16 @@ export default defineComponent({
       try {
         state.loading = true;
         const folders = await getFolders();
-        const detail = await getDetail();
         state.folders = folders;
-        state.title = detail.title;
-        state.value = detail.content;
-        const tree = getChildren(detail.folderID);
-        state.folder = tree;
+        const detail = await getDetail();
+        if (detail) {
+          state.title = detail.title;
+          state.value = detail.content;
+          const tree = getChildren(detail.folderID);
+          state.folder = tree;
+        }
       } catch (error) {
+        console.log(error);
         ElMessage({
           type: "error",
           message: "加载错误",

@@ -44,11 +44,11 @@ export async function getDocumentContent(
 }
 
 export async function getProjectFolders(
-  documentID: number
+  projectID: number
 ): Promise<IDataResult<IFolderItemData[]>> {
   return await axios.get("/api/document/folders", {
     params: {
-      documentID,
+      projectID,
     },
   });
 }
